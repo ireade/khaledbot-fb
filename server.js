@@ -66,9 +66,14 @@ var setupPostAttachment = function(post) {
             "title":"Hunt This"
           },
           {
+            "type":"postback",
+            "payload": "postInfo_"+post.id,
+            "title":"More Info"
+          },
+          {
             "type":"web_url",
             "url": post.discussion_url,
-            "title":"Discuss on Product Hunt"
+            "title":"Discuss on PH"
           }         
         ]
     }
@@ -86,45 +91,13 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
     bot.reply(message, "Hi there!");
 
-    bot.reply(message, {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text: 'What category are you interested in?',
-            buttons: [
-              {
-                type: 'postback',
-                title: 'Tech',
-                payload: 'category_tech'
-              },
-              {
-                type: 'postback',
-                title: 'Games',
-                payload: 'category_games'
-              },
-              {
-                type: 'postback',
-                title: 'Podcasts',
-                payload: 'category_podcasts'
-              },
-              {
-                type: 'postback',
-                title: 'Books',
-                payload: 'category_books'
-              }
-            ]
-          }
-        }
-    })
+
 
 })
 
 
 
 function getHunts(bot, message, url) {
-
-    bot.reply(message, "hunting...");
 
     httpGet(url, function(response) {
 
@@ -171,23 +144,80 @@ controller.hears(['books'], 'message_received', function (bot, message) {
 })
 
 
-// controller.on('facebook_postback', function (bot, message) {
-//   switch (message.payload) {
-//     case 'category_tech':
-//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
-//         break
-//     case 'category_games':
-//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
-//         break
-//     case 'category_podcasts':
-//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
-//         break
-//     case 'category_books':
-//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
-//         break
 
-//   }
-// })
+
+function getPostInfo(bot, message, postID) {
+
+    var url = "https://api.producthunt.com/v1/posts/"+postID+PH_access_token;
+
+    httpGet(url, function(response) {
+
+        var post = response.post;
+
+
+
+        //
+        bot.reply(message, "Some more information on "+post.name);
+
+
+        // VOTES
+        bot.reply(message, "It has "+post.votes_count+" votes");
+
+
+        // MAKERS
+        var number_of_makers = post.makers.length + 1;
+        bot.reply(message, "There are "+number_of_makers+" makers identified");
+
+        var makersProfiles = [];
+        for ( var i = 0; i < number_of_makers.length; i++ ) {
+
+            var maker = post.makers[i];
+            var makerAttachment = {
+                "title": maker.name,
+                "image_url": maker.image_url.original,
+                "subtitle": maker.headline,
+                "buttons":[
+                  {
+                    "type":"web_url",
+                    "url": maker.profile_url,
+                    "title":"Visit Profile"
+                  }        
+                ]
+            }
+            makersProfiles.push(makerAttachment)
+        }
+        bot.reply(message, {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'generic',
+                elements: makersProfiles
+
+              }
+            }
+        })
+
+
+
+        
+
+    })
+
+}
+
+
+controller.on('facebook_postback', function (bot, message) {
+
+    if ( message.payload.indexOf('postInfo_') > -1 ) {
+
+        var postID = message.payload.split("_")[1];
+
+        getPostInfo(bot, message, postID);
+
+    }
+
+
+})
 
 
 
