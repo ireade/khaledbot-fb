@@ -155,7 +155,6 @@ function getPostInfo(bot, message, postID) {
         var post = response.post;
 
 
-
         //
         bot.reply(message, "Some more information on "+post.name);
 
@@ -175,8 +174,8 @@ function getPostInfo(bot, message, postID) {
             var makerAttachment = {
                 "title": maker.name,
                 "image_url": maker.image_url.original,
-                "subtitle": maker.headline,
-                "buttons":[
+                "subtitle": maker.headline ? maker.headline : " ",
+                "buttons": [
                   {
                     "type":"web_url",
                     "url": maker.profile_url,
@@ -199,7 +198,49 @@ function getPostInfo(bot, message, postID) {
 
 
 
-        
+
+        // MEDIA
+        var number_of_media = post.media.length;
+        if ( post.media.length > 0 ) {
+
+
+            var mediaAttachments = [];
+
+            for ( var i = 0; i < number_of_makers.length; i++ ) {
+
+                var media = post.media[i];
+
+                if ( media.media_type == "image" ) {
+
+
+                    var mediaAttachment = {
+                        "title": "",
+                        "image_url": maker.image_url,
+                        "subtitle": "",
+
+                    }
+                    mediaAttachments.push(mediaAttachment)
+
+                }
+            }
+
+            bot.reply(message, {
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    template_type: 'generic',
+                    elements: mediaAttachments
+
+                  }
+                }
+            })
+
+
+        }
+
+
+
+
 
     })
 
