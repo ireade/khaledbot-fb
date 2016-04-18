@@ -156,16 +156,16 @@ function getHunts(bot, message, url) {
 controller.on('facebook_postback', function (bot, message) {
   switch (message.payload) {
     case 'category_tech':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token;)
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
         break
     case 'category_games':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token;)
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
         break
     case 'category_podcasts':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token;)
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
         break
     case 'category_books':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token;)
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
         break
 
   }
