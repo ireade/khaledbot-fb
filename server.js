@@ -81,7 +81,18 @@ var setupPostAttachment = function(post) {
 
 controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
+    bot.reply(message, "hi there, say hunt");
+
+
+})
+
+
+controller.hears(['hunt'], 'message_received', function (bot, message) {
+
+    bot.reply(message, "hunting...");
+
     getStories(posts, function(response) {
+
 
         var hunts = response.posts;
         
@@ -104,7 +115,6 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
     })
 
 
-  
 })
 
 // // controller.on('facebook_postback', function (bot, message) {
