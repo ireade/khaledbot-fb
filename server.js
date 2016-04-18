@@ -68,6 +68,7 @@ var setupPostAttachment = function(post) {
             "title":"Discuss on Product Hunt"
           }         
         ]
+    }
     
 
     return postAttachment;
@@ -78,11 +79,9 @@ var setupPostAttachment = function(post) {
 
 
 
-
 controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
     bot.reply(message, "hi there, say hunt");
-
 
 })
 
@@ -92,7 +91,6 @@ controller.hears(['hunt'], 'message_received', function (bot, message) {
     bot.reply(message, "hunting...");
 
     getStories(posts, function(response) {
-
 
         var hunts = response.posts;
         
@@ -117,27 +115,4 @@ controller.hears(['hunt'], 'message_received', function (bot, message) {
 
 })
 
-// // controller.on('facebook_postback', function (bot, message) {
-// //   switch (message.payload) {
-// //     case 'show_cat':
-// //       bot.reply(message, {
-// //         attachment: {
-// //           type: 'image',
-// //           payload: {
-// //             url: 'https://media.giphy.com/media/5xaOcLT4VhjRfudPcS4/giphy.gif'
-// //           }
-// //         }
-// //       })
-// //       break
-// //     case 'show_dog':
-// //       bot.reply(message, {
-// //         attachment: {
-// //           type: 'image',
-// //           payload: {
-// //             url: 'https://media.giphy.com/media/3o7ZeL5FH6Ap9jR9Kg/giphy.gif'
-// //           }
-// //         }
-// //       })
-// //       break
-// //   }
-// // })
+
