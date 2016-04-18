@@ -84,14 +84,14 @@ var setupPostAttachment = function(post) {
 
 controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
-    bot.reply(message, "Hi there, what category are you interested in?");
+    bot.reply(message, "Hi there!");
 
     bot.reply(message, {
         attachment: {
           type: 'template',
           payload: {
             template_type: 'button',
-            text: 'Which do you prefer',
+            text: 'What category are you interested in?',
             buttons: [
               {
                 type: 'postback',
@@ -112,7 +112,7 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
                 type: 'postback',
                 title: 'Books',
                 payload: 'category_books'
-              },
+              }
             ]
           }
         }
