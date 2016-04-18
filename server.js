@@ -153,23 +153,41 @@ function getHunts(bot, message, url) {
 
 
 
-controller.on('facebook_postback', function (bot, message) {
-  switch (message.payload) {
-    case 'category_tech':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
-        break
-    case 'category_games':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
-        break
-    case 'category_podcasts':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
-        break
-    case 'category_books':
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
-        break
-
-  }
+controller.hears(['tech'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the tech category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
 })
+controller.hears(['games'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the games category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
+})
+controller.hears(['podcasts'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the podcasts category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
+})
+controller.hears(['books'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the books category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
+})
+
+
+// controller.on('facebook_postback', function (bot, message) {
+//   switch (message.payload) {
+//     case 'category_tech':
+//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
+//         break
+//     case 'category_games':
+//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
+//         break
+//     case 'category_podcasts':
+//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
+//         break
+//     case 'category_books':
+//         getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
+//         break
+
+//   }
+// })
 
 
 
