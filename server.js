@@ -1,6 +1,5 @@
 var Botkit = require('botkit')
 var https = require("https")
-var Promise = require('promise')
 
 var accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
 var verifyToken = process.env.FACEBOOK_VERIFY_TOKEN
@@ -211,18 +210,7 @@ function getPostInfo(bot, message, postID) {
 
 
         // VOTES
-
-        var postInfoReply_voteCount = new Promise(function (bot, message, resolve, reject) {
-            bot.reply(message, "It has "+post.votes_count+" votes", function() {
-                resolve(true);
-            });
-        })
-        var foo = function() {
-            console.log("done");
-        }
-
-        postInfoReply_voteCount.then(foo);
-        //bot.reply(message, "It has "+post.votes_count+" votes");
+        bot.reply(message, "It has "+post.votes_count+" votes");
 
 
         // MAKERS
@@ -261,6 +249,35 @@ function getPostInfo(bot, message, postID) {
                   }
                 }
             })
+
+
+
+
+            // Message from a maker
+            var number_of_comments = post.comments.length;
+            if ( number_of_comments > 0 ) {
+
+                var makerMessage = false;
+
+                for ( var i = 0; i < number_of_comments; i++ ) {
+
+
+                    if ( number_of_comments[i].maker = true ) {
+
+                        makerMessage = number_of_comments[i].body;
+
+                        bot.reply(message, "A message from a maker");
+                        bot.reply(message, makerMessage);
+
+                    }
+
+
+                    if ( makerMessage ) {
+                        break;
+                    }
+
+                }
+            }
 
         } else {
 
