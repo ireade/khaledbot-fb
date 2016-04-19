@@ -1,5 +1,6 @@
 var Botkit = require('botkit')
 var https = require("https")
+var Promise = require('promise')
 
 var accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
 var verifyToken = process.env.FACEBOOK_VERIFY_TOKEN
@@ -52,6 +53,11 @@ var httpGet = function(url, callback) {
 
 
 
+/* *****************************
+
+    
+
+***************************** */
 
 
 var setupPostAttachment = function(post) {
@@ -87,6 +93,14 @@ var setupPostAttachment = function(post) {
 
 
 
+/* *****************************
+
+    CONTROLLER
+
+***************************** */
+
+
+
 controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
     bot.reply(message, "Hi there!");
@@ -98,14 +112,6 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
           payload: {
             template_type: 'generic',
             elements: [
-                {
-                    "title": "Latest",
-                    "buttons":[{
-                        "type":"postback",
-                        "payload": "getPosts_all",
-                        "title":"More Info"
-                    }]
-                },
                 {
                     "title": "Tech",
                     "buttons":[{
@@ -181,6 +187,13 @@ function getHunts(bot, message, url) {
 
 
 
+/* *****************************
+
+    Single Post Information
+
+***************************** */
+
+
 
 
 
@@ -198,7 +211,18 @@ function getPostInfo(bot, message, postID) {
 
 
         // VOTES
-        bot.reply(message, "It has "+post.votes_count+" votes");
+
+        var postInfoReply_voteCount = new Promise(function (bot, message, resolve, reject) {
+            bot.reply(message, "It has "+post.votes_count+" votes", function() {
+                resolve(true);
+            });
+        })
+        var foo = function() {
+            console.log("done");
+        }
+
+        postInfoReply_voteCount.then(foo);
+        //bot.reply(message, "It has "+post.votes_count+" votes");
 
 
         // MAKERS
@@ -245,7 +269,6 @@ function getPostInfo(bot, message, postID) {
 
 
 
-
         // MEDIA
         var number_of_media = post.media.length;
         if ( number_of_media > 0 ) {
@@ -281,12 +304,21 @@ function getPostInfo(bot, message, postID) {
         }
 
 
-
-
-
     })
 
 }
+
+
+
+
+
+
+/* *****************************
+
+    CONTROLLER
+
+***************************** */
+
 
 
 controller.on('facebook_postback', function (bot, message) {
@@ -304,14 +336,8 @@ controller.on('facebook_postback', function (bot, message) {
 
         var postCategory = message.payload.split("_")[1];
 
-        if (postCategory == 'all') {
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token)
 
-            getHunts(bot, message, "https://api.producthunt.com/v1/posts/all"+PH_access_token)
-
-        } else {
-
-            getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token)
-        }
 
     }
  
