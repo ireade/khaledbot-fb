@@ -201,22 +201,21 @@ function getPostInfo(bot, message, postID) {
 
         // MEDIA
         var number_of_media = post.media.length;
-        if ( post.media.length > 0 ) {
+        if ( number_of_media > 0 ) {
 
 
             var mediaAttachments = [];
 
-            for ( var i = 0; i < number_of_makers.length; i++ ) {
+            for ( var i = 0; i < number_of_media; i++ ) {
 
-                var media = post.media[i];
+                var mediaItem = post.media[i];
 
-                if ( media.media_type == "image" ) {
+                if ( mediaItem.media_type == "image" ) {
 
 
                     var mediaAttachment = {
-                        "title": "",
-                        "image_url": maker.image_url,
-                        "subtitle": "",
+                        "title": "Title",
+                        "image_url": mediaItem.image_url,
 
                     }
                     mediaAttachments.push(mediaAttachment)
