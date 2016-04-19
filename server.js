@@ -54,7 +54,74 @@ var httpGet = function(url, callback) {
 
 /* *****************************
 
-    
+    CHOOSE CATEGORY
+
+***************************** */
+
+var chooseCategoryPrompt = function(bot, message) {
+
+    var reply = "Choose a category...";
+
+    bot.reply(message, reply, function(err, response) {
+
+        bot.reply(message, {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'generic',
+                elements: [
+                    {
+                        "title": "Tech",
+                        "buttons":[{
+                            "type":"postback",
+                            "payload": "getPosts_tech",
+                            "title":"See Hunts"
+                        }]
+                    },
+                    {
+                        "title": "Games",
+                        "buttons":[{
+                            "type":"postback",
+                            "payload": "getPosts_games",
+                            "title":"See Hunts"
+                        }]
+                    },
+                    {
+                        "title": "Podcasts",
+                        "buttons":[{
+                            "type":"postback",
+                            "payload": "getPosts_podcasts",
+                            "title":"See Hunts"
+                        }]
+                    },
+                    {
+                        "title": "Books",
+                        "buttons":[{
+                            "type":"postback",
+                            "payload": "getPosts_books",
+                            "title":"See Hunts"
+                        }]
+                    }
+                    
+
+                ]
+              }
+            }
+        })
+
+    })
+
+}
+
+
+
+
+
+
+
+/* *****************************
+
+    POSTS
 
 ***************************** */
 
@@ -90,72 +157,9 @@ var setupPostAttachment = function(post) {
 
 
 
-
-
-/* *****************************
-
-    CONTROLLER
-
-***************************** */
-
-
-
-controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
-
-    bot.reply(message, "Hi there!");
-
-
-    bot.reply(message, {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            elements: [
-                {
-                    "title": "Tech",
-                    "buttons":[{
-                        "type":"postback",
-                        "payload": "getPosts_tech",
-                        "title":"More Info"
-                    }]
-                },
-                {
-                    "title": "Games",
-                    "buttons":[{
-                        "type":"postback",
-                        "payload": "getPosts_games",
-                        "title":"More Info"
-                    }]
-                },
-                {
-                    "title": "Podcasts",
-                    "buttons":[{
-                        "type":"postback",
-                        "payload": "getPosts_podcasts",
-                        "title":"More Info"
-                    }]
-                },
-                {
-                    "title": "Books",
-                    "buttons":[{
-                        "type":"postback",
-                        "payload": "getPosts_books",
-                        "title":"More Info"
-                    }]
-                }
-                
-
-            ]
-          }
-        }
-    })
-
-
-})
-
-
-
 function getHunts(bot, message, url) {
+
+    bot.reply(message, "Fetching hunts...");
 
     httpGet(url, function(response) {
 
@@ -209,7 +213,6 @@ var sendPostInfo_intro = function(bot, message, post, callback) {
         if (err) console.log(err)
         callback(true)
     })
-
 }
 
 
@@ -221,7 +224,6 @@ var sendPostInfo_votes = function(bot, message, post, callback) {
         if (err) console.log(err)
         callback(true)
     })
-
 }
 
 
@@ -233,12 +235,11 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
     var makersProfiles = [];
 
     for ( var i = 0; i < number_of_makers; i++ ) {
-
         var maker = post.makers[i];
         var makerAttachment = {
             "title": maker.name,
-            "image_url": maker.image_url.original,
-            "subtitle": maker.headline ? maker.headline : " ",
+            "image_url": maker.image_url.original ? maker.image_url.original : "",
+            "subtitle": maker.headline ? maker.headline : "",
             "buttons": [
               {
                 "type":"web_url",
@@ -249,7 +250,6 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
         }
         makersProfiles.push(makerAttachment)
     }
-
 
     var reply = {
         attachment: {
@@ -266,9 +266,6 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
         if (err) console.log(err)
         callback(true)
     });
-
-    
-
 }
 
 
@@ -287,7 +284,6 @@ var sendPostInfo_makerMessage = function(bot, message, post, callback) {
             if ( makerMessage ) { break; }
         }
 
-
         if ( makerMessage ) {
             var reply = 'From a maker — "' + makerMessage + '"';
             bot.reply(message, reply, function(err, response) {
@@ -295,14 +291,8 @@ var sendPostInfo_makerMessage = function(bot, message, post, callback) {
                 callback(true)
             });
 
-        } else {
-            callback(true)
-        }
-
-    } else {
-        callback(true)
-    }
-
+        } else { callback(true) }
+    } else { callback(true) }
 }
 
 
@@ -310,40 +300,36 @@ var sendPostInfo_media = function(bot, message, post, callback) {
    var number_of_media = post.media.length;
     if ( number_of_media > 0 ) {
 
-        bot.reply(message, "Here are some images related to it");
-        var mediaAttachments = [];
+        bot.reply(message, "Here are some related images...", function(err, response) {
 
-        for ( var i = 0; i < number_of_media; i++ ) {
+            var mediaAttachments = [];
 
-            var mediaItem = post.media[i];
-
-            if ( mediaItem.media_type == "image" ) {
-                var mediaAttachment = {
-                    "title": "Media",
-                    "image_url": mediaItem.image_url,
-
+            for ( var i = 0; i < number_of_media; i++ ) {
+                var mediaItem = post.media[i];
+                if ( mediaItem.media_type == "image" ) {
+                    var mediaAttachment = {
+                        "title": "Media",
+                        "image_url": mediaItem.image_url,
+                    }
+                    mediaAttachments.push(mediaAttachment)
                 }
-                mediaAttachments.push(mediaAttachment)
             }
-        }
 
-        var reply = {
-            type: 'template',
-            payload: {
-            template_type: 'generic',
-            elements: mediaAttachments
-
+            var reply = {
+                type: 'template',
+                payload: {
+                    template_type: 'generic',
+                    elements: mediaAttachments
+                }
             }
-        }
-        
-        bot.reply(message, reply, function(err, response) {
-            if (err) console.log(err)
-            callback(true)
+            bot.reply(message, reply, function(err, response) {
+                if (err) console.log(err)
+                callback(true)
+            });
+
         });
 
-    } else {
-        callback(true)
-    }
+    } else { callback(true) }
 }
 
 
@@ -407,56 +393,57 @@ function getPostInfo(bot, message, postID) {
 
 
 
-controller.on('facebook_postback', function (bot, message) {
+/****  KEYWORDS ************************/
 
-    if ( message.payload.indexOf('postInfo_') > -1 ) {
+controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
-        var postID = message.payload.split("_")[1];
+    bot.reply(message, "Hi there!");
+    chooseCategoryPrompt(bot, message);
+    
+})
 
-        getPostInfo(bot, message, postID);
-
-    }
-
-
-    else if ( message.payload.indexOf('getPosts_') > -1 ) {
-
-        var postCategory = message.payload.split("_")[1];
-
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token)
-
-
-    }
- 
-
+controller.hears(['help'], 'message_received', function (bot, message) {
+    var reply = "Looks like you need help";
+    bot.reply(message, reply);
 })
 
 
-controller.hears(['tech'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the tech category");
+
+controller.hears(['tech', 'technology'], 'message_received', function (bot, message) {
     getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
 })
-controller.hears(['games'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the games category");
+controller.hears(['games', 'game'], 'message_received', function (bot, message) {
     getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
 })
-controller.hears(['podcasts'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the podcasts category");
+controller.hears(['podcasts', 'podcast'], 'message_received', function (bot, message) {
     getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
 })
-controller.hears(['books'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the books category");
+controller.hears(['books', 'book'], 'message_received', function (bot, message) {
     getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
 })
 
 
 
 
+/****  FACEBOOK POSTBACKS  ************************/
 
-controller.on('message_received', function (bot, message) {
-    bot.reply(message, "Sorry, I didn't get that");
+controller.on('facebook_postback', function (bot, message) {
+
+    if ( message.payload.indexOf('postInfo_') > -1 ) {
+        var postID = message.payload.split("_")[1];
+        getPostInfo(bot, message, postID);
+    }
+
+    else if ( message.payload.indexOf('getPosts_') > -1 ) {
+        var postCategory = message.payload.split("_")[1];
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token)
+    }
+ 
 
 })
 
+
+/****  OTHER EVENTS  ************************/
 
 controller.on('facebook_optin', function (bot, message) {
     bot.reply(message, "Welcome!");
@@ -464,11 +451,9 @@ controller.on('facebook_optin', function (bot, message) {
 })
 
 
+controller.on('message_received', function (bot, message) {
+    bot.reply(message, "Sorry, I didn't get that");
 
-
-
-
-
-
+})
 
 
