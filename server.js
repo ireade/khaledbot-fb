@@ -328,14 +328,13 @@ var sendPostInfo_media = function(bot, message, post, callback) {
         }
 
         var reply = {
-              type: 'template',
-              payload: {
-                template_type: 'generic',
-                elements: mediaAttachments
+            type: 'template',
+            payload: {
+            template_type: 'generic',
+            elements: mediaAttachments
 
-              }
             }
-        };
+        }
         
         bot.reply(message, reply, function(err, response) {
             if (err) console.log(err)
