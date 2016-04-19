@@ -4,7 +4,8 @@ var https = require("https")
 var accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
 var verifyToken = process.env.FACEBOOK_VERIFY_TOKEN
 var port = process.env.PORT || 3000
-var PH_access_token = "?access_token=" + process.env.PH_ACCESS_TOKEN
+var PH_access_token = process.env.PH_ACCESS_TOKEN || "f9985dd2199d08509371703c57faf5bc8d050e39f9ba0926bb13f9c15b55a254";
+PH_access_token = "?access_token=" + PH_access_token
 
 if (!accessToken) throw new Error('FACEBOOK_PAGE_ACCESS_TOKEN is required but missing')
 if (!verifyToken) throw new Error('FACEBOOK_VERIFY_TOKEN is required but missing')
@@ -25,8 +26,6 @@ controller.setupWebserver(port, function (err, webserver) {
 })
 
 
-
-var foo = "f9985dd2199d08509371703c57faf5bc8d050e39f9ba0926bb13f9c15b55a254";
 
 
 var httpGet = function(url, callback) {

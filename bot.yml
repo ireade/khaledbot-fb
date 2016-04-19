@@ -1,4 +1,4 @@
-name: KhaledBot (FB)
+name: Messenger Hunt
 config:
   - name: PH_ACCESS_TOKEN
     friendly_name: Product Hunt Access Token
