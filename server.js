@@ -92,6 +92,59 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
     bot.reply(message, "Hi there!");
 
 
+    bot.reply(message, {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [
+                {
+                    "title": "Latest",
+                    "buttons":[{
+                        "type":"postback",
+                        "payload": "getPosts_all",
+                        "title":"More Info"
+                    }]
+                },
+                {
+                    "title": "Tech",
+                    "buttons":[{
+                        "type":"postback",
+                        "payload": "getPosts_tech",
+                        "title":"More Info"
+                    }]
+                },
+                {
+                    "title": "Games",
+                    "buttons":[{
+                        "type":"postback",
+                        "payload": "getPosts_games",
+                        "title":"More Info"
+                    }]
+                },
+                {
+                    "title": "Podcasts",
+                    "buttons":[{
+                        "type":"postback",
+                        "payload": "getPosts_podcasts",
+                        "title":"More Info"
+                    }]
+                },
+                {
+                    "title": "Books",
+                    "buttons":[{
+                        "type":"postback",
+                        "payload": "getPosts_books",
+                        "title":"More Info"
+                    }]
+                }
+                
+
+            ]
+          }
+        }
+    })
+
 
 })
 
@@ -102,20 +155,20 @@ function getHunts(bot, message, url) {
     httpGet(url, function(response) {
 
         var hunts = response.posts;
+
+        var elements = [];
+
+        for ( var i = 0; i < 10; i++ ) {
+            var post = setupPostAttachment( hunts[i] );
+            elements.push(post);
+        }
         
         bot.reply(message, {
             attachment: {
               type: 'template',
               payload: {
                 template_type: 'generic',
-                elements: [
-                    setupPostAttachment( hunts[0] ),
-                    setupPostAttachment( hunts[1] ),
-                    setupPostAttachment( hunts[2] ),
-                    setupPostAttachment( hunts[3] ),
-                    setupPostAttachment( hunts[4] )
-                ]
-
+                elements: elements
               }
             }
         })
@@ -126,22 +179,7 @@ function getHunts(bot, message, url) {
 
 
 
-controller.hears(['tech'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the tech category");
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
-})
-controller.hears(['games'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the games category");
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
-})
-controller.hears(['podcasts'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the podcasts category");
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
-})
-controller.hears(['books'], 'message_received', function (bot, message) {
-    bot.reply(message, "Getting posts in the books category");
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
-})
+
 
 
 
@@ -262,6 +300,40 @@ controller.on('facebook_postback', function (bot, message) {
     }
 
 
+    else if ( message.payload.indexOf('getPosts_') > -1 ) {
+
+        var postCategory = message.payload.split("_")[1];
+
+        if (postCategory == 'all') {
+
+            getHunts(bot, message, "https://api.producthunt.com/v1/posts/all"+PH_access_token)
+
+        } else {
+
+            getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token)
+        }
+
+    }
+ 
+
+})
+
+
+controller.hears(['tech'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the tech category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
+})
+controller.hears(['games'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the games category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
+})
+controller.hears(['podcasts'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the podcasts category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
+})
+controller.hears(['books'], 'message_received', function (bot, message) {
+    bot.reply(message, "Getting posts in the books category");
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
 })
 
 
