@@ -165,7 +165,11 @@ function getHunts(bot, message, url) {
 
         for ( var i = 0; i < 10; i++ ) {
             var post = setupPostAttachment( hunts[i] );
-            elements.push(post);
+
+            if ( post ) {
+                elements.push(post);
+            }
+            
         }
         
         bot.reply(message, {
@@ -262,9 +266,9 @@ function getPostInfo(bot, message, postID) {
                 for ( var i = 0; i < number_of_comments; i++ ) {
 
 
-                    if ( number_of_comments[i].maker == true ) {
+                    if ( post.comments[i].maker == true ) {
 
-                        makerMessage = number_of_comments[i].body;
+                        makerMessage = post.comments[i].body;
 
                         bot.reply(message, "A message from a maker");
                         bot.reply(message, makerMessage);
