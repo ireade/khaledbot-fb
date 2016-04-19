@@ -164,37 +164,37 @@ function getPostInfo(bot, message, postID) {
 
 
         // MAKERS
-        var number_of_makers = post.makers.length + 1;
-        bot.reply(message, "There are "+number_of_makers+" makers identified");
+        // var number_of_makers = post.makers.length + 1;
+        // bot.reply(message, "There are "+number_of_makers+" makers identified");
 
-        var makersProfiles = [];
-        for ( var i = 0; i < number_of_makers.length; i++ ) {
+        // var makersProfiles = [];
+        // for ( var i = 0; i < number_of_makers.length; i++ ) {
 
-            var maker = post.makers[i];
-            var makerAttachment = {
-                "title": maker.name,
-                "image_url": maker.image_url.original,
-                "subtitle": maker.headline ? maker.headline : " ",
-                "buttons": [
-                  {
-                    "type":"web_url",
-                    "url": maker.profile_url,
-                    "title":"Visit Profile"
-                  }        
-                ]
-            }
-            makersProfiles.push(makerAttachment)
-        }
-        bot.reply(message, {
-            attachment: {
-              type: 'template',
-              payload: {
-                template_type: 'generic',
-                elements: makersProfiles
+        //     var maker = post.makers[i];
+        //     var makerAttachment = {
+        //         "title": maker.name,
+        //         "image_url": maker.image_url.original,
+        //         "subtitle": maker.headline ? maker.headline : " ",
+        //         "buttons": [
+        //           {
+        //             "type":"web_url",
+        //             "url": maker.profile_url,
+        //             "title":"Visit Profile"
+        //           }        
+        //         ]
+        //     }
+        //     makersProfiles.push(makerAttachment)
+        // }
+        // bot.reply(message, {
+        //     attachment: {
+        //       type: 'template',
+        //       payload: {
+        //         template_type: 'generic',
+        //         elements: makersProfiles
 
-              }
-            }
-        })
+        //       }
+        //     }
+        // })
 
 
 
