@@ -161,9 +161,11 @@ function getHunts(bot, message, url) {
 
         var hunts = response.posts;
 
+        console.log(hunts);
+
         var elements = [];
 
-        for ( var i = 0; i < 10; i++ ) {
+        for ( var i = 0; i < 9; i++ ) {
 
             if ( hunts[i] ) {
                 var post = setupPostAttachment( hunts[i] );
