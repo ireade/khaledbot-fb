@@ -229,6 +229,7 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
     bot.reply(message, "There are "+ actual_number_of_makers +" makers identified");
 
     var makersProfiles = [];
+
     for ( var i = 0; i < number_of_makers; i++ ) {
 
         var maker = post.makers[i];
@@ -248,7 +249,7 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
     }
 
 
-    bot.reply(message, {
+    var reply = {
         attachment: {
           type: 'template',
           payload: {
@@ -257,39 +258,91 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
 
           }
         }
-    }, function(response) {
+    }
+
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
         callback(true)
-    })
+    });
+
+    
+
+}
 
 
+var sendPostInfo_makerMessage = function(bot, message, post, callback) {
 
-
-    // Message from a maker
     var number_of_comments = post.comments.length;
+
     if ( number_of_comments > 0 ) {
 
         var makerMessage = false;
 
         for ( var i = 0; i < number_of_comments; i++ ) {
-
-
             if ( post.comments[i].maker == true ) {
-
                 makerMessage = post.comments[i].body;
-
-                bot.reply(message, "A message from a maker");
-                bot.reply(message, makerMessage);
-
             }
-
-
-            if ( makerMessage ) {
-                break;
-            }
-
+            if ( makerMessage ) { break; }
         }
+
+
+        if ( makerMessage ) {
+            var reply = 'From a maker — "' + makerMessage + '"';
+            bot.reply(message, reply, function(err, response) {
+                if (err) console.log(err)
+                callback(true)
+            });
+
+        } else {
+            callback(true)
+        }
+
+    } else {
+        callback(true)
     }
 
+}
+
+
+var sendPostInfo_media = function(bot, message, post, callback) {
+   var number_of_media = post.media.length;
+    if ( number_of_media > 0 ) {
+
+        bot.reply(message, "Here are some images related to it");
+        var mediaAttachments = [];
+
+        for ( var i = 0; i < number_of_media; i++ ) {
+
+            var mediaItem = post.media[i];
+
+            if ( mediaItem.media_type == "image" ) {
+                var mediaAttachment = {
+                    "title": "Media",
+                    "image_url": mediaItem.image_url,
+
+                }
+                mediaAttachments.push(mediaAttachment)
+            }
+        }
+
+        var reply = {
+              type: 'template',
+              payload: {
+                template_type: 'generic',
+                elements: mediaAttachments
+
+              }
+            }
+        };
+        
+        bot.reply(message, reply, function(err, response) {
+            if (err) console.log(err)
+            callback(true)
+        });
+
+    } else {
+        callback(true)
+    }
 }
 
 
@@ -303,7 +356,6 @@ function getPostInfo(bot, message, postID) {
 
         var post = response.post;
 
-
         // Introduction
         sendPostInfo_intro(bot, message, post, function(response) {
 
@@ -313,60 +365,32 @@ function getPostInfo(bot, message, postID) {
                 // Maker
                 if ( post.makers.length > 0 ) {
 
+                    // Maker - Information
                     sendPostInfo_makerInfo(bot, message, post, function(response) {
-                        console.log("finihed")
+                        
+                        // Maker - Message
+                        sendPostInfo_makerMessage(bot, message, post, function(response) {
+
+                            // Media
+                            sendPostInfo_media(bot, message, post, function(response) {})
+
+                        })
                     })
 
                 } else {
 
-                    bot.reply(message, "No makers have been identified yet");
+                    bot.reply(message, "No makers have been identified yet", function(err, response) {
+                        if (err) console.log(err)
+
+                        // Media
+                        sendPostInfo_media(bot, message, post, function(response) {})
+                    });
                 }
 
             })
-        })
+        }) // END!
 
-
-
-        // MEDIA
-        var number_of_media = post.media.length;
-        if ( number_of_media > 0 ) {
-
-            bot.reply(message, "Here are some images related to it");
-            var mediaAttachments = [];
-
-            for ( var i = 0; i < number_of_media; i++ ) {
-
-                var mediaItem = post.media[i];
-
-                if ( mediaItem.media_type == "image" ) {
-                    var mediaAttachment = {
-                        "title": "Media",
-                        "image_url": mediaItem.image_url,
-
-                    }
-                    mediaAttachments.push(mediaAttachment)
-                }
-            }
-
-            bot.reply(message, {
-                attachment: {
-                  type: 'template',
-                  payload: {
-                    template_type: 'generic',
-                    elements: mediaAttachments
-
-                  }
-                }
-            })
-
-        }
-        
-
-        
-
-
-    })
-
+    }) // End http get
 }
 
 
