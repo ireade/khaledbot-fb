@@ -60,6 +60,7 @@ var httpGet = function(url, callback) {
 
 
 var setupPostAttachment = function(post) {
+
     var postAttachment = {
         "title": post.name,
         "image_url": post.thumbnail.image_url,
@@ -78,12 +79,11 @@ var setupPostAttachment = function(post) {
           {
             "type":"web_url",
             "url": post.discussion_url,
-            "title":"Discuss on PH"
+            "title":"Discuss/Upvote"
           }         
         ]
     }
     
-
     return postAttachment;
 
 }
@@ -164,10 +164,12 @@ function getHunts(bot, message, url) {
         var elements = [];
 
         for ( var i = 0; i < 10; i++ ) {
-            var post = setupPostAttachment( hunts[i] );
 
-            if ( post ) {
+            if ( hunts[i] ) {
+                var post = setupPostAttachment( hunts[i] );
                 elements.push(post);
+            } else {
+                break;
             }
             
         }
@@ -197,6 +199,99 @@ function getHunts(bot, message, url) {
 ***************************** */
 
 
+var sendPostInfo_intro = function(bot, message, post, callback) {
+
+    var reply = 'Some more information about "'+post.name+'"';
+
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+        callback(true)
+    })
+
+}
+
+
+var sendPostInfo_votes = function(bot, message, post, callback) {
+
+    var reply = "It has "+post.votes_count+" votes";
+
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+        callback(true)
+    })
+
+}
+
+
+var sendPostInfo_makerInfo = function(bot, message, post, callback) {
+    var number_of_makers = post.makers.length;
+    var actual_number_of_makers = number_of_makers + 1;
+    bot.reply(message, "There are "+ actual_number_of_makers +" makers identified");
+
+    var makersProfiles = [];
+    for ( var i = 0; i < number_of_makers; i++ ) {
+
+        var maker = post.makers[i];
+        var makerAttachment = {
+            "title": maker.name,
+            "image_url": maker.image_url.original,
+            "subtitle": maker.headline ? maker.headline : " ",
+            "buttons": [
+              {
+                "type":"web_url",
+                "url": maker.profile_url,
+                "title":"Visit Profile"
+              }        
+            ]
+        }
+        makersProfiles.push(makerAttachment)
+    }
+
+
+    bot.reply(message, {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: makersProfiles
+
+          }
+        }
+    }, function(response) {
+        callback(true)
+    })
+
+
+
+
+    // Message from a maker
+    var number_of_comments = post.comments.length;
+    if ( number_of_comments > 0 ) {
+
+        var makerMessage = false;
+
+        for ( var i = 0; i < number_of_comments; i++ ) {
+
+
+            if ( post.comments[i].maker == true ) {
+
+                makerMessage = post.comments[i].body;
+
+                bot.reply(message, "A message from a maker");
+                bot.reply(message, makerMessage);
+
+            }
+
+
+            if ( makerMessage ) {
+                break;
+            }
+
+        }
+    }
+
+}
+
 
 
 
@@ -209,84 +304,26 @@ function getPostInfo(bot, message, postID) {
         var post = response.post;
 
 
-        //
-        bot.reply(message, 'Some more information about "'+post.name+'"');
+        // Introduction
+        sendPostInfo_intro(bot, message, post, function(response) {
 
+            // Number of Votes
+            sendPostInfo_votes(bot, message, post, function(response) {
 
-        // VOTES
-        bot.reply(message, "It has "+post.votes_count+" votes");
+                // Maker
+                if ( post.makers.length > 0 ) {
 
+                    sendPostInfo_makerInfo(bot, message, post, function(response) {
+                        console.log("finihed")
+                    })
 
-        // MAKERS
-        var number_of_makers = post.makers.length;
+                } else {
 
-        if ( number_of_makers > 0 ) {
-
-            var actual_number_of_makers = number_of_makers + 1;
-            bot.reply(message, "There are "+ actual_number_of_makers +" makers identified");
-
-            var makersProfiles = [];
-            for ( var i = 0; i < number_of_makers; i++ ) {
-
-                var maker = post.makers[i];
-                var makerAttachment = {
-                    "title": maker.name,
-                    "image_url": maker.image_url.original,
-                    "subtitle": maker.headline ? maker.headline : " ",
-                    "buttons": [
-                      {
-                        "type":"web_url",
-                        "url": maker.profile_url,
-                        "title":"Visit Profile"
-                      }        
-                    ]
+                    bot.reply(message, "No makers have been identified yet");
                 }
-                makersProfiles.push(makerAttachment)
-            }
-            bot.reply(message, {
-                attachment: {
-                  type: 'template',
-                  payload: {
-                    template_type: 'generic',
-                    elements: makersProfiles
 
-                  }
-                }
             })
-
-
-
-
-            // Message from a maker
-            var number_of_comments = post.comments.length;
-            if ( number_of_comments > 0 ) {
-
-                var makerMessage = false;
-
-                for ( var i = 0; i < number_of_comments; i++ ) {
-
-
-                    if ( post.comments[i].maker == true ) {
-
-                        makerMessage = post.comments[i].body;
-
-                        bot.reply(message, "A message from a maker");
-                        bot.reply(message, makerMessage);
-
-                    }
-
-
-                    if ( makerMessage ) {
-                        break;
-                    }
-
-                }
-            }
-
-        } else {
-
-            bot.reply(message, "No makers have been identified yet");
-        }
+        })
 
 
 
@@ -323,6 +360,9 @@ function getPostInfo(bot, message, postID) {
             })
 
         }
+        
+
+        
 
 
     })
@@ -382,6 +422,28 @@ controller.hears(['books'], 'message_received', function (bot, message) {
     bot.reply(message, "Getting posts in the books category");
     getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
 })
+
+
+
+
+
+controller.on('message_received', function (bot, message) {
+    bot.reply(message, "Sorry, I didn't get that");
+
+})
+
+
+controller.on('facebook_optin', function (bot, message) {
+    bot.reply(message, "Welcome!");
+
+})
+
+
+
+
+
+
+
 
 
 
