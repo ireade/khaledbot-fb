@@ -262,7 +262,7 @@ function getPostInfo(bot, message, postID) {
                 for ( var i = 0; i < number_of_comments; i++ ) {
 
 
-                    if ( number_of_comments[i].maker = true ) {
+                    if ( number_of_comments[i].maker == true ) {
 
                         makerMessage = number_of_comments[i].body;
 
