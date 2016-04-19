@@ -156,7 +156,7 @@ function getPostInfo(bot, message, postID) {
 
 
         //
-        bot.reply(message, "Some more information on "+post.name);
+        bot.reply(message, 'Some more information about "'+post.name+'"');
 
 
         // VOTES
@@ -164,37 +164,46 @@ function getPostInfo(bot, message, postID) {
 
 
         // MAKERS
-        // var number_of_makers = post.makers.length + 1;
-        // bot.reply(message, "There are "+number_of_makers+" makers identified");
+        var number_of_makers = post.makers.length;
 
-        // var makersProfiles = [];
-        // for ( var i = 0; i < number_of_makers.length; i++ ) {
+        if ( number_of_makers > 0 ) {
 
-        //     var maker = post.makers[i];
-        //     var makerAttachment = {
-        //         "title": maker.name,
-        //         "image_url": maker.image_url.original,
-        //         "subtitle": maker.headline ? maker.headline : " ",
-        //         "buttons": [
-        //           {
-        //             "type":"web_url",
-        //             "url": maker.profile_url,
-        //             "title":"Visit Profile"
-        //           }        
-        //         ]
-        //     }
-        //     makersProfiles.push(makerAttachment)
-        // }
-        // bot.reply(message, {
-        //     attachment: {
-        //       type: 'template',
-        //       payload: {
-        //         template_type: 'generic',
-        //         elements: makersProfiles
+            var actual_number_of_makers = number_of_makers + 1;
+            bot.reply(message, "There are "+ actual_number_of_makers +" makers identified");
 
-        //       }
-        //     }
-        // })
+            var makersProfiles = [];
+            for ( var i = 0; i < number_of_makers; i++ ) {
+
+                var maker = post.makers[i];
+                var makerAttachment = {
+                    "title": maker.name,
+                    "image_url": maker.image_url.original,
+                    "subtitle": maker.headline ? maker.headline : " ",
+                    "buttons": [
+                      {
+                        "type":"web_url",
+                        "url": maker.profile_url,
+                        "title":"Visit Profile"
+                      }        
+                    ]
+                }
+                makersProfiles.push(makerAttachment)
+            }
+            bot.reply(message, {
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    template_type: 'generic',
+                    elements: makersProfiles
+
+                  }
+                }
+            })
+
+        } else {
+
+            bot.reply(message, "No makers have been identified yet");
+        }
 
 
 
@@ -203,7 +212,7 @@ function getPostInfo(bot, message, postID) {
         var number_of_media = post.media.length;
         if ( number_of_media > 0 ) {
 
-
+            bot.reply(message, "Here are some images related to it");
             var mediaAttachments = [];
 
             for ( var i = 0; i < number_of_media; i++ ) {
@@ -211,15 +220,12 @@ function getPostInfo(bot, message, postID) {
                 var mediaItem = post.media[i];
 
                 if ( mediaItem.media_type == "image" ) {
-
-
                     var mediaAttachment = {
-                        "title": "Title",
+                        "title": "Media",
                         "image_url": mediaItem.image_url,
 
                     }
                     mediaAttachments.push(mediaAttachment)
-
                 }
             }
 
@@ -233,7 +239,6 @@ function getPostInfo(bot, message, postID) {
                   }
                 }
             })
-
 
         }
 
