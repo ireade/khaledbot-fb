@@ -478,7 +478,7 @@ function getPostInfo(bot, message, postID) {
 ***************************** */
 
 
-var help_init = function(bo, message) {
+var help_init = function(bot, message) {
 
     var reply = {
         attachment: {
@@ -533,6 +533,7 @@ var help_init = function(bo, message) {
 
             ]
           }
+        }   
     }
 
 
