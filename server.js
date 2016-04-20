@@ -72,35 +72,63 @@ var chooseCategoryPrompt = function(bot, message) {
                 elements: [
                     {
                         "title": "Tech",
-                        "buttons":[{
-                            "type":"postback",
-                            "payload": "getPosts_tech",
-                            "title":"See Hunts"
-                        }]
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_tech",
+                                "title":"Today's Hunts"
+                            },
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_tech_1",
+                                "title":"Yesterday's Hunts"
+                            }
+                        ]
                     },
                     {
                         "title": "Games",
-                        "buttons":[{
-                            "type":"postback",
-                            "payload": "getPosts_games",
-                            "title":"See Hunts"
-                        }]
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_games",
+                                "title":"Today's Hunts"
+                            },
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_games_1",
+                                "title":"Yesterday's Hunts"
+                            }
+                        ]
                     },
                     {
                         "title": "Podcasts",
-                        "buttons":[{
-                            "type":"postback",
-                            "payload": "getPosts_podcasts",
-                            "title":"See Hunts"
-                        }]
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_podcasts",
+                                "title":"Today's Hunts"
+                            },
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_podcasts_1",
+                                "title":"Yesterday's Hunts"
+                            }
+                        ]
                     },
                     {
                         "title": "Books",
-                        "buttons":[{
-                            "type":"postback",
-                            "payload": "getPosts_books",
-                            "title":"See Hunts"
-                        }]
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_books",
+                                "title":"Today's Hunts"
+                            },
+                            {
+                                "type":"postback",
+                                "payload": "getPosts_books_1",
+                                "title":"Yesterday's Hunts"
+                            }
+                        ]
                     }
                     
 
@@ -232,7 +260,7 @@ var sendPostInfo_votes = function(bot, message, post, callback) {
 var sendPostInfo_makerInfo = function(bot, message, post, callback) {
     var number_of_makers = post.makers.length;
 
-    var replyNOM = "There was 1 maker identified, here's some more information"
+    var replyNOM = "There was 1 maker identified, here's some more information on them"
     if ( number_of_makers > 1 ) {
         replyNOM = "There were "+ number_of_makers +" makers identified. Here's some more information on them"
     }
@@ -289,14 +317,22 @@ var sendPostInfo_makerMessage = function(bot, message, post, callback) {
         for ( var i = 0; i < number_of_comments; i++ ) {
             if ( post.comments[i].maker == true ) {
 
-                makerMessage = post.comments[i].body;
-                makerMessage = makerMessage.slice(0, 300) + "...";
+                makerMessage = post.comments[i];
+                
             }
             if ( makerMessage ) { break; }
         }
 
         if ( makerMessage ) {
-            var reply = 'From a maker — "' + makerMessage + '"';
+
+            var messageFrom = makerMessage.user.name;
+            var messageBody = makerMessageMaker.body;
+
+            var reply = 'From '+ messageFrom +' — "' + messageBody + '"';
+
+            reply = reply.slice(0, 310) + "...";
+
+
             bot.reply(message, reply, function(err, response) {
                 if (err) console.log(err)
                 callback(true)
@@ -360,7 +396,6 @@ var sendPostInfo_CTA = function(bot, message, post) {
             type: 'template',
             payload: {
                 template_type: 'button',
-                text: 'Which do you prefer',
                 buttons: [
                     {
                         "type":"web_url",
@@ -409,7 +444,6 @@ function getPostInfo(bot, message, postID) {
 
                                 sendPostInfo_CTA(bot, message, post);
 
-
                             })
 
                         })
@@ -421,7 +455,11 @@ function getPostInfo(bot, message, postID) {
                         if (err) console.log(err)
 
                         // Media
-                        sendPostInfo_media(bot, message, post, function(response) {})
+                        sendPostInfo_media(bot, message, post, function(response) {
+
+                            sendPostInfo_CTA(bot, message, post);
+
+                        })
                     });
                 }
 
@@ -487,7 +525,13 @@ controller.on('facebook_postback', function (bot, message) {
 
     else if ( message.payload.indexOf('getPosts_') > -1 ) {
         var postCategory = message.payload.split("_")[1];
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token)
+
+        var days_ago = message.payload.split("_")[2];
+        var days_ago_parameter = "";
+
+        if ( days_ago ) { days_ago_parameter = "&days_ago="+days_ago; }
+
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token+days_ago_parameter)
     }
  
 
