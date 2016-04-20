@@ -356,10 +356,6 @@ var sendPostInfo_media = function(bot, message, post, callback) {
                 }
                 mediaAttachments.push(mediaAttachment)
             }
-
-            if ( mediaAttachments.length == 1 ) {
-                
-            }
         }
 
         if ( mediaAttachments.length > 1 ) {
@@ -376,7 +372,7 @@ var sendPostInfo_media = function(bot, message, post, callback) {
                     }
                 }
                 bot.reply(message, reply, function(err, response) {
-                    if (err) console.log(err)
+                    if (err) console.log("error ar mediaAttachments")
                     callback(true)
                 });
             })
