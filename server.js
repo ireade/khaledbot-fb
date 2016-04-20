@@ -3,13 +3,20 @@ var https = require("https")
 
 var accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
 var verifyToken = process.env.FACEBOOK_VERIFY_TOKEN
-var port = process.env.PORT || 3000
-var PH_access_token = process.env.PH_ACCESS_TOKEN || "f9985dd2199d08509371703c57faf5bc8d050e39f9ba0926bb13f9c15b55a254";
-PH_access_token = "?access_token=" + PH_access_token
+var port = process.env.PORT
+var PHAccessToken = process.env.PH_ACCESS_TOKEN
 
 if (!accessToken) throw new Error('FACEBOOK_PAGE_ACCESS_TOKEN is required but missing')
 if (!verifyToken) throw new Error('FACEBOOK_VERIFY_TOKEN is required but missing')
 if (!port) throw new Error('PORT is required but missing')
+if (!PHAccessToken) throw new Error('PH_ACCESS_TOKEN is required by missing ')
+
+
+/* *****************************
+
+    SETUP BOT AND CONTROLLER
+
+***************************** */
 
 var controller = Botkit.facebookbot({
   access_token: accessToken,
@@ -25,7 +32,17 @@ controller.setupWebserver(port, function (err, webserver) {
   })
 })
 
+PHAccessToken = "?access_token=" + PHAccessToken
 
+
+
+
+
+/* *****************************
+
+   GLOBAL FUNCTIONS
+
+***************************** */
 
 
 var httpGet = function(url, callback) {
@@ -64,75 +81,75 @@ var chooseCategoryPrompt = function(bot, message) {
 
     bot.reply(message, reply, function(err, response) {
 
+        var categories = [
+            {
+                "title": "Tech",
+                "buttons":[
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_tech",
+                        "title":"Today's Hunts"
+                    },
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_tech_1",
+                        "title":"Yesterday's Hunts"
+                    }
+                ]
+            },
+            {
+                "title": "Games",
+                "buttons":[
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_games",
+                        "title":"Today's Hunts"
+                    },
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_games_1",
+                        "title":"Yesterday's Hunts"
+                    }
+                ]
+            },
+            {
+                "title": "Podcasts",
+                "buttons":[
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_podcasts",
+                        "title":"Today's Hunts"
+                    },
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_podcasts_1",
+                        "title":"Yesterday's Hunts"
+                    }
+                ]
+            },
+            {
+                "title": "Books",
+                "buttons":[
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_books",
+                        "title":"Today's Hunts"
+                    },
+                    {
+                        "type":"postback",
+                        "payload": "getPosts_books_1",
+                        "title":"Yesterday's Hunts"
+                    }
+                ]
+            }
+        ]
+
         bot.reply(message, {
             attachment: {
               type: 'template',
               payload: {
                 template_type: 'generic',
-                elements: [
-                    {
-                        "title": "Tech",
-                        "buttons":[
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_tech",
-                                "title":"Today's Hunts"
-                            },
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_tech_1",
-                                "title":"Yesterday's Hunts"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Games",
-                        "buttons":[
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_games",
-                                "title":"Today's Hunts"
-                            },
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_games_1",
-                                "title":"Yesterday's Hunts"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Podcasts",
-                        "buttons":[
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_podcasts",
-                                "title":"Today's Hunts"
-                            },
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_podcasts_1",
-                                "title":"Yesterday's Hunts"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Books",
-                        "buttons":[
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_books",
-                                "title":"Today's Hunts"
-                            },
-                            {
-                                "type":"postback",
-                                "payload": "getPosts_books_1",
-                                "title":"Yesterday's Hunts"
-                            }
-                        ]
-                    }
-                    
-
-                ]
+                elements: categories
               }
             }
         })
@@ -416,7 +433,7 @@ var sendPostInfo_CTA = function(bot, message, post) {
 
 function getPostInfo(bot, message, postID) {
 
-    var url = "https://api.producthunt.com/v1/posts/"+postID+PH_access_token;
+    var url = "https://api.producthunt.com/v1/posts/"+postID+PHAccessToken;
 
     httpGet(url, function(response) {
 
@@ -602,16 +619,16 @@ controller.hears(['help'], 'message_received', function (bot, message) {
 
 
 controller.hears(['tech', 'technology'], 'message_received', function (bot, message) {
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PH_access_token)
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/tech/posts"+PHAccessToken)
 })
 controller.hears(['games', 'game'], 'message_received', function (bot, message) {
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PH_access_token)
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/games/posts"+PHAccessToken)
 })
 controller.hears(['podcasts', 'podcast'], 'message_received', function (bot, message) {
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PH_access_token)
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/podcasts/posts"+PHAccessToken)
 })
 controller.hears(['books', 'book'], 'message_received', function (bot, message) {
-    getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PH_access_token)
+    getHunts(bot, message, "https://api.producthunt.com/v1/categories/books/posts"+PHAccessToken)
 })
 
 
@@ -634,7 +651,7 @@ controller.on('facebook_postback', function (bot, message) {
 
         if ( days_ago ) { days_ago_parameter = "&days_ago="+days_ago; }
 
-        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token+days_ago_parameter)
+        getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PHAccessToken+days_ago_parameter)
     }
 
     else if ( message.payload.indexOf('help_') > -1 ) {
@@ -646,7 +663,7 @@ controller.on('facebook_postback', function (bot, message) {
                 break  
 
             case 'reportError':
-                var reply = "reportError";
+                var reply = "Email ire@ireaderinokun.com";
                 bot.reply(message, reply, function(err, response) {
                     if (err) console.log(err)
                 });
