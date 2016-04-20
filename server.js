@@ -307,8 +307,6 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
 
 var sendPostInfo_makerMessage = function(bot, message, post, callback) {
 
-    callback(true)
-
     var number_of_comments = post.comments.length;
 
     if ( number_of_comments > 0 ) {
@@ -317,9 +315,7 @@ var sendPostInfo_makerMessage = function(bot, message, post, callback) {
 
         for ( var i = 0; i < number_of_comments; i++ ) {
             if ( post.comments[i].maker == true ) {
-
                 makerMessage = post.comments[i];
-                
             }
             if ( makerMessage ) { break; }
         }
@@ -367,6 +363,8 @@ var sendPostInfo_media = function(bot, message, post, callback) {
         }
 
         if ( mediaAttachments.length > 1 ) {
+
+            console.log(mediaAttachments);
 
             bot.reply(message, "Here are some related images...", function(err, response) {
 
@@ -452,7 +450,7 @@ function getPostInfo(bot, message, postID) {
 
                 } else {
 
-                    bot.reply(message, "No makers have been identified yet", function(err, response) {
+                    bot.reply(message, "Looks like none of the makers have been identified yet", function(err, response) {
                         if (err) console.log(err)
 
                         // Media
@@ -495,6 +493,8 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 controller.hears(['help'], 'message_received', function (bot, message) {
     var reply = "Looks like you need help";
     bot.reply(message, reply);
+
+    // Report error, say hello
 })
 
 
