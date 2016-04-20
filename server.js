@@ -382,7 +382,6 @@ var sendPostInfo_media = function(bot, message, post, callback) {
 
 
 
-
 var sendPostInfo_CTA = function(bot, message, post) {
 
     var reply = {
