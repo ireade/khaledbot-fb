@@ -190,7 +190,7 @@ function getHunts(bot, message, url) {
     var category = url.split("/categories/");
         category = category[1].split("/posts")[0];
 
-    bot.reply(message, "Fetching hunts in the " +category+ " category ..");
+    bot.reply(message, "Fetching hunts in the " +category+ " category..");
 
     httpGet(url, function(response) {
 
@@ -406,12 +406,8 @@ var sendPostInfo_CTA = function(bot, message, post) {
         }
     }
 
-    console.log(reply);
-
     bot.reply(message, reply, function(err, response) {
         if (err) console.log(err)
-
-        console.log(response);
     })
 }
 
@@ -475,6 +471,81 @@ function getPostInfo(bot, message, postID) {
 
 
 
+/* *****************************
+
+    HELP
+
+***************************** */
+
+
+var help_init = function(bo, message) {
+
+    var reply = {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [
+                {
+                    "title": "Messenger Hunt",
+                    "subtitle": "Some help using this bot",
+                    "buttons":[
+                        {
+                            "type":"postback",
+                            "payload": "help_listCommande",
+                            "title":"List Commands"
+                        },
+                        {
+                            "type":"postback",
+                            "payload": "help_reportError",
+                            "title":"Report Error"
+                        }
+                    ]
+                },
+                {
+                    "title": "Ire",
+                    "subtitle": "Maker of Messenger Hunt",
+                    "image_url": "https://pbs.twimg.com/profile_images/689743404025122817/zz1j-bC2.png",
+                    "buttons":[
+                        {
+                            "type":"web_url",
+                            "web_url": "http://ireaderinokun.com",
+                            "title":"Website"
+                        },
+                        {
+                            "type":"web_url",
+                            "web_url": "https://twitter.com/ireaderinokun",
+                            "title":"Tweet Me"
+                        }
+                    ]
+                },
+                {
+                    "title": "Product Hunt",
+                    "subtitle": "Product Hunt surfaces the best new products, every day.",
+                    "buttons":[
+                        {
+                            "type":"web_url",
+                            "web_url": "https://www.producthunt.com/",
+                            "title":"Website"
+                        }
+                    ]
+                } 
+
+            ]
+          }
+    }
+
+
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+    })
+
+}
+
+
+
+
+
 
 /* *****************************
 
@@ -494,11 +565,16 @@ controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
     });
 })
 
+controller.hears(['category', 'categories'], 'message_received', function (bot, message) {
+    chooseCategoryPrompt(bot, message);
+})
+
 controller.hears(['help'], 'message_received', function (bot, message) {
     var reply = "Looks like you need help";
-    bot.reply(message, reply);
-
-    // Report error, say hello
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+        help_init(bot, message);
+    });
 })
 
 
