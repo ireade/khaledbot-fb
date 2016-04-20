@@ -350,11 +350,10 @@ var sendPostInfo_media = function(bot, message, post, callback) {
         for ( var i = 0; i < number_of_media; i++ ) {
             var mediaItem = post.media[i];
             if ( mediaItem.media_type == "image" ) {
-                var mediaAttachment = {
+                mediaAttachments.push({
                     "title": "Media",
-                    "image_url": mediaItem.image_url,
-                }
-                mediaAttachments.push(mediaAttachment)
+                    "image_url": mediaItem.image_url
+                })
             }
         }
 
@@ -372,7 +371,7 @@ var sendPostInfo_media = function(bot, message, post, callback) {
                     }
                 }
                 bot.reply(message, reply, function(err, response) {
-                    if (err) console.log("error ar mediaAttachments")
+                    if (err) console.log("error at mediaAttachments")
                     callback(true)
                 });
             })
