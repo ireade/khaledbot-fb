@@ -389,7 +389,7 @@ var sendPostInfo_CTA = function(bot, message, post) {
             type: 'template',
             payload: {
                 template_type: 'button',
-                text: 'Do stuff',
+                text: post.name,
                 buttons: [
                     {
                         "type":"web_url",
