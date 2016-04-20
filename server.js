@@ -552,15 +552,13 @@ var help_listCommands = function(bot, message) {
     bot.reply(message, reply, function(err, response) {
         if (err) console.log(err)
 
-        var reply = "'categories' to fetch the list of categories"
-        bot.reply(message, reply, function(err, response) {
-            if (err) console.log(err)
 
-            var reply = "Technology posts.."
-            bot.reply(message, reply, function(err, response) {
-                if (err) console.log(err)
-            })
-        })
+        bot.reply(message, 'Say "categories" to fetch the list of categories to choose from');
+
+        bot.reply(message, 'Say a category name, for example "tech" to see the latest hunts from that category');
+
+        //bot.reply(message, 'Say "" to ');
+
     })
 
 
@@ -642,7 +640,7 @@ controller.on('facebook_postback', function (bot, message) {
     else if ( message.payload.indexOf('help_') > -1 ) {
         var helpCommand = message.payload.split("_")[1];
 
-        switch (message.payload) {
+        switch (helpCommand) {
             case 'listCommands':
                 help_listCommands(bot, message);
                 break  
