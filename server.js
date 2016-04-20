@@ -218,7 +218,9 @@ var sendPostInfo_intro = function(bot, message, post, callback) {
 
 var sendPostInfo_votes = function(bot, message, post, callback) {
 
-    var reply = "It has "+post.votes_count+" votes";
+    var reaction = "! :open_mouth:";
+
+    var reply = "It has "+post.votes_count+" votes" + reaction;
 
     bot.reply(message, reply, function(err, response) {
         if (err) console.log(err)
@@ -229,8 +231,13 @@ var sendPostInfo_votes = function(bot, message, post, callback) {
 
 var sendPostInfo_makerInfo = function(bot, message, post, callback) {
     var number_of_makers = post.makers.length;
-    var actual_number_of_makers = number_of_makers + 1;
-    bot.reply(message, "There are "+ actual_number_of_makers +" makers identified");
+
+    var replyNOM = "There was 1 maker identified, here's some more information"
+    if ( number_of_makers > 1 ) {
+        replyNOM = "There were "+ number_of_makers +" makers identified. Here's some more information on them"
+    }
+
+    bot.reply(message, replyNOM);
 
     var makersProfiles = [];
 
@@ -279,7 +286,9 @@ var sendPostInfo_makerMessage = function(bot, message, post, callback) {
 
         for ( var i = 0; i < number_of_comments; i++ ) {
             if ( post.comments[i].maker == true ) {
+
                 makerMessage = post.comments[i].body;
+                makerMessage = makerMessage.slice(0, 300) + "...";
             }
             if ( makerMessage ) { break; }
         }
