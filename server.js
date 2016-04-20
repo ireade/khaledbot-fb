@@ -489,10 +489,11 @@ var help_init = function(bot, message) {
                 {
                     "title": "Messenger Hunt",
                     "subtitle": "Some help using this bot",
+                    "image_url": "assets/ph-kitten.png",
                     "buttons":[
                         {
                             "type":"postback",
-                            "payload": "help_listCommande",
+                            "payload": "help_listCommands",
                             "title":"List Commands"
                         },
                         {
@@ -503,7 +504,7 @@ var help_init = function(bot, message) {
                     ]
                 },
                 {
-                    "title": "Ire",
+                    "title": "Ire Aderinokun",
                     "subtitle": "Maker of Messenger Hunt",
                     "image_url": "https://pbs.twimg.com/profile_images/689743404025122817/zz1j-bC2.png",
                     "buttons":[
@@ -515,13 +516,14 @@ var help_init = function(bot, message) {
                         {
                             "type":"web_url",
                             "url": "https://twitter.com/ireaderinokun",
-                            "title":"Tweet Me"
+                            "title":"Twitter"
                         }
                     ]
                 },
                 {
                     "title": "Product Hunt",
                     "subtitle": "Product Hunt surfaces the best new products, every day.",
+                    "image_url": "assets/ph-logo.png",
                     "buttons":[
                         {
                             "type":"web_url",
@@ -614,6 +616,30 @@ controller.on('facebook_postback', function (bot, message) {
         if ( days_ago ) { days_ago_parameter = "&days_ago="+days_ago; }
 
         getHunts(bot, message, "https://api.producthunt.com/v1/categories/"+postCategory+"/posts"+PH_access_token+days_ago_parameter)
+    }
+
+    else if ( message.payload.indexOf('help_') > -1 ) {
+        var helpCommand = message.payload.split("_")[1];
+
+        switch (message.payload) {
+            case 'listCommands':
+                var reply = "listCommands";
+                bot.reply(message, reply, function(err, response) {
+                    if (err) console.log(err)
+                });
+                break  
+
+            case 'reportError':
+                var reply = "reportError";
+                bot.reply(message, reply, function(err, response) {
+                    if (err) console.log(err)
+                });
+                break
+        }
+
+
+        
+
     }
  
 
