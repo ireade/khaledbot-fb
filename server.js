@@ -489,7 +489,7 @@ var help_init = function(bot, message) {
                 {
                     "title": "Messenger Hunt",
                     "subtitle": "Some help using this bot",
-                    "image_url": "assets/ph-kitten.png",
+                    "image_url": "https://raw.githubusercontent.com/ireade/khaledbot-fb/master/assets/ph-kitten.png",
                     "buttons":[
                         {
                             "type":"postback",
@@ -523,7 +523,7 @@ var help_init = function(bot, message) {
                 {
                     "title": "Product Hunt",
                     "subtitle": "Product Hunt surfaces the best new products, every day.",
-                    "image_url": "assets/ph-logo.png",
+                    "image_url": "https://raw.githubusercontent.com/ireade/khaledbot-fb/master/assets/ph-logo.png",
                     "buttons":[
                         {
                             "type":"web_url",
@@ -542,6 +542,27 @@ var help_init = function(bot, message) {
     bot.reply(message, reply, function(err, response) {
         if (err) console.log(err)
     })
+
+}
+
+
+var help_listCommands = function(bot, message) {
+
+    var reply = "Here are some keywords you can use with me.."
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+
+        var reply = "'categories' to fetch the list of categories"
+        bot.reply(message, reply, function(err, response) {
+            if (err) console.log(err)
+
+            var reply = "Technology posts.."
+            bot.reply(message, reply, function(err, response) {
+                if (err) console.log(err)
+            })
+        })
+    })
+
 
 }
 
@@ -623,10 +644,7 @@ controller.on('facebook_postback', function (bot, message) {
 
         switch (message.payload) {
             case 'listCommands':
-                var reply = "listCommands";
-                bot.reply(message, reply, function(err, response) {
-                    if (err) console.log(err)
-                });
+                help_listCommands(bot, message);
                 break  
 
             case 'reportError':
