@@ -326,7 +326,7 @@ var sendPostInfo_makerMessage = function(bot, message, post, callback) {
         if ( makerMessage ) {
 
             var messageFrom = makerMessage.user.name;
-            var messageBody = makerMessageMaker.body;
+            var messageBody = makerMessage.body;
 
             var reply = 'From '+ messageFrom +' — "' + messageBody + '"';
 
