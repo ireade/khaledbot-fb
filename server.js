@@ -387,6 +387,8 @@ var sendPostInfo_media = function(bot, message, post, callback) {
 
 var sendPostInfo_CTA = function(bot, message, post) {
 
+    console.log("cta buttons called")
+
     bot.reply(message, {
         attachment: {
             type: 'template',
@@ -481,10 +483,11 @@ function getPostInfo(bot, message, postID) {
 /****  KEYWORDS ************************/
 
 controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
-
-    bot.reply(message, "Hi there!");
-    chooseCategoryPrompt(bot, message);
-    
+    var reply = "Hi there! I have some hunts for you";
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+        chooseCategoryPrompt(bot, message);
+    });
 })
 
 controller.hears(['help'], 'message_received', function (bot, message) {
@@ -539,13 +542,17 @@ controller.on('facebook_postback', function (bot, message) {
 /****  OTHER EVENTS  ************************/
 
 controller.on('facebook_optin', function (bot, message) {
-    bot.reply(message, "Welcome!");
+    var reply = "Welcome! I have some hunts for you";
+    bot.reply(message, reply, function(err, response) {
+        if (err) console.log(err)
+        chooseCategoryPrompt(bot, message);
+    });
 
 })
 
 
 controller.on('message_received', function (bot, message) {
-    bot.reply(message, "Sorry, I didn't get that");
+    bot.reply(message, "Sorry, I didn't get that. Say help if you need some help");
 
 })
 
