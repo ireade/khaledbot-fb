@@ -359,8 +359,6 @@ var sendPostInfo_media = function(bot, message, post, callback) {
 
         if ( mediaAttachments.length > 1 ) {
 
-            console.log(mediaAttachments);
-
             bot.reply(message, "Here are some related images...", function(err, response) {
 
                 var reply = {
@@ -387,11 +385,12 @@ var sendPostInfo_media = function(bot, message, post, callback) {
 
 var sendPostInfo_CTA = function(bot, message, post) {
 
-    bot.reply(message, {
+    var reply = {
         attachment: {
             type: 'template',
             payload: {
                 template_type: 'button',
+                text: 'Do stuff',
                 buttons: [
                     {
                         "type":"web_url",
@@ -406,8 +405,14 @@ var sendPostInfo_CTA = function(bot, message, post) {
                 ]
             }
         }
-    }, function(err, response) {
+    }
+
+    console.log(reply);
+
+    bot.reply(message, reply, function(err, response) {
         if (err) console.log(err)
+
+        console.log(response);
     })
 }
 
