@@ -351,8 +351,8 @@ var sendPostInfo_media = function(bot, message, post, callback) {
             var mediaItem = post.media[i];
             if ( mediaItem.media_type == "image" ) {
                 mediaAttachments.push({
-                    title: "Media",
-                    image_url: mediaItem.image_url
+                    "title": "Media",
+                    "image_url": mediaItem.image_url
                 })
             }
         }
@@ -364,14 +364,17 @@ var sendPostInfo_media = function(bot, message, post, callback) {
             bot.reply(message, "Here are some related images...", function(err, response) {
 
                 var reply = {
-                    type: 'template',
-                    payload: {
+                    attachment: {
+                      type: 'template',
+                      payload: {
                         template_type: 'generic',
                         elements: mediaAttachments
+
+                      }
                     }
                 }
                 bot.reply(message, reply, function(err, response) {
-                    if (err) console.log("error at mediaAttachments")
+                    if (err) console.log(err)
                     callback(true)
                 });
             })
