@@ -187,13 +187,14 @@ var setupPostAttachment = function(post) {
 
 function getHunts(bot, message, url) {
 
-    bot.reply(message, "Fetching hunts...");
+    var category = url.split("/categories/");
+        category = category[1].split("/posts")[0];
+
+    bot.reply(message, "Fetching hunts in the " +category+ " category...");
 
     httpGet(url, function(response) {
 
         var hunts = response.posts;
-
-        console.log(hunts);
 
         var elements = [];
 
@@ -246,7 +247,7 @@ var sendPostInfo_intro = function(bot, message, post, callback) {
 
 var sendPostInfo_votes = function(bot, message, post, callback) {
 
-    var reaction = "! :open_mouth:";
+    var reaction = "! 🙃";
 
     var reply = "It has "+post.votes_count+" votes" + reaction;
 
