@@ -278,6 +278,8 @@ var sendPostInfo_makerInfo = function(bot, message, post, callback) {
 
 var sendPostInfo_makerMessage = function(bot, message, post, callback) {
 
+    callback(true)
+
     var number_of_comments = post.comments.length;
 
     if ( number_of_comments > 0 ) {
@@ -309,36 +311,71 @@ var sendPostInfo_media = function(bot, message, post, callback) {
    var number_of_media = post.media.length;
     if ( number_of_media > 0 ) {
 
-        bot.reply(message, "Here are some related images...", function(err, response) {
 
-            var mediaAttachments = [];
+        var mediaAttachments = [];
 
-            for ( var i = 0; i < number_of_media; i++ ) {
-                var mediaItem = post.media[i];
-                if ( mediaItem.media_type == "image" ) {
-                    var mediaAttachment = {
-                        "title": "Media",
-                        "image_url": mediaItem.image_url,
+        for ( var i = 0; i < number_of_media; i++ ) {
+            var mediaItem = post.media[i];
+            if ( mediaItem.media_type == "image" ) {
+                var mediaAttachment = {
+                    "title": "Media",
+                    "image_url": mediaItem.image_url,
+                }
+                mediaAttachments.push(mediaAttachment)
+            }
+
+            if ( mediaAttachments.length == 1 ) {
+                
+            }
+        }
+
+        if ( mediaAttachments.length > 1 ) {
+
+            bot.reply(message, "Here are some related images...", function(err, response) {
+
+                var reply = {
+                    type: 'template',
+                    payload: {
+                        template_type: 'generic',
+                        elements: mediaAttachments
                     }
-                    mediaAttachments.push(mediaAttachment)
                 }
-            }
+                bot.reply(message, reply, function(err, response) {
+                    if (err) console.log(err)
+                    callback(true)
+                });
+            })
 
-            var reply = {
-                type: 'template',
-                payload: {
-                    template_type: 'generic',
-                    elements: mediaAttachments
-                }
-            }
-            bot.reply(message, reply, function(err, response) {
-                if (err) console.log(err)
-                callback(true)
-            });
-
-        });
-
+        } else { callback(true) }
     } else { callback(true) }
+}
+
+
+
+
+var sendPostInfo_CTA = function(bot, message, post) {
+
+    bot.reply(message, {
+        attachment: {
+            type: 'template',
+            payload: {
+                template_type: 'button',
+                text: 'Which do you prefer',
+                buttons: [
+                    {
+                        "type":"web_url",
+                        "url": post.redirect_url,
+                        "title":"Hunt This"
+                    },
+                    {
+                        "type":"web_url",
+                        "url": post.discussion_url,
+                        "title":"Discuss/Upvote"
+                    }  
+                ]
+            }
+        }
+    })
 }
 
 
@@ -368,7 +405,12 @@ function getPostInfo(bot, message, postID) {
                         sendPostInfo_makerMessage(bot, message, post, function(response) {
 
                             // Media
-                            sendPostInfo_media(bot, message, post, function(response) {})
+                            sendPostInfo_media(bot, message, post, function(response) {
+
+                                sendPostInfo_CTA(bot, message, post);
+
+
+                            })
 
                         })
                     })
