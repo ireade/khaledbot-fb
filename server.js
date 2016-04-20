@@ -162,14 +162,14 @@ var setupPostAttachment = function(post) {
         "subtitle": post.tagline,
         "buttons":[
           {
-            "type":"web_url",
-            "url": post.redirect_url,
-            "title":"Hunt This"
-          },
-          {
             "type":"postback",
             "payload": "postInfo_"+post.id,
             "title":"More Info"
+          },
+          {
+            "type":"web_url",
+            "url": post.redirect_url,
+            "title":"Hunt This"
           },
           {
             "type":"web_url",
@@ -190,7 +190,7 @@ function getHunts(bot, message, url) {
     var category = url.split("/categories/");
         category = category[1].split("/posts")[0];
 
-    bot.reply(message, "Fetching hunts in the " +category+ " category...");
+    bot.reply(message, "Fetching hunts in the " +category+ " category ..");
 
     httpGet(url, function(response) {
 
@@ -387,8 +387,6 @@ var sendPostInfo_media = function(bot, message, post, callback) {
 
 var sendPostInfo_CTA = function(bot, message, post) {
 
-    console.log("cta buttons called")
-
     bot.reply(message, {
         attachment: {
             type: 'template',
@@ -408,6 +406,8 @@ var sendPostInfo_CTA = function(bot, message, post) {
                 ]
             }
         }
+    }, function(err, response) {
+        if (err) console.log(err)
     })
 }
 
