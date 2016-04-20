@@ -509,12 +509,12 @@ var help_init = function(bot, message) {
                     "buttons":[
                         {
                             "type":"web_url",
-                            "web_url": "http://ireaderinokun.com",
+                            "url": "http://ireaderinokun.com",
                             "title":"Website"
                         },
                         {
                             "type":"web_url",
-                            "web_url": "https://twitter.com/ireaderinokun",
+                            "url": "https://twitter.com/ireaderinokun",
                             "title":"Tweet Me"
                         }
                     ]
@@ -525,7 +525,7 @@ var help_init = function(bot, message) {
                     "buttons":[
                         {
                             "type":"web_url",
-                            "web_url": "https://www.producthunt.com/",
+                            "url": "https://www.producthunt.com/",
                             "title":"Website"
                         }
                     ]
