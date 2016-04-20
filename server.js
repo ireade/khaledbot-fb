@@ -351,8 +351,8 @@ var sendPostInfo_media = function(bot, message, post, callback) {
             var mediaItem = post.media[i];
             if ( mediaItem.media_type == "image" ) {
                 mediaAttachments.push({
-                    "title": "Media",
-                    "image_url": mediaItem.image_url
+                    title: "Media",
+                    image_url: mediaItem.image_url
                 })
             }
         }
