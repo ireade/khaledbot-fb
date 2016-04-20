@@ -369,7 +369,6 @@ var sendPostInfo_media = function(bot, message, post, callback) {
                       payload: {
                         template_type: 'generic',
                         elements: mediaAttachments
-
                       }
                     }
                 }
