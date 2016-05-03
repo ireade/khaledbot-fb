@@ -251,14 +251,17 @@ function getHunts(bot, message, url) {
 ***************************** */
 
 
-var sendPostInfo_intro = function(bot, message, post, callback) {
+var sendPostInfo_intro = function(bot, message, post) {
+    return new Promise(function(resolve, reject) {
 
-    var reply = 'Some more information about "'+post.name+'"';
+        var reply = 'Some more information about "'+post.name+'"';
 
-    bot.reply(message, reply, function(err, response) {
-        if (err) console.log(err)
-        callback(true)
-    })
+        bot.reply(message, reply, function(err, response) {
+            if (err) reject(err)
+            resolve()
+        })
+
+    }) 
 }
 
 
@@ -440,19 +443,35 @@ function getPostInfo(bot, message, postID) {
         var post = response.post;
 
         // Introduction
-        sendPostInfo_intro(bot, message, post, function(response) {
+        sendPostInfo_intro(bot, message, post)
+            .then(function() {
 
-            // Number of Votes
-            sendPostInfo_votes(bot, message, post, function(response) {
+                // Number of Votes
+                sendPostInfo_votes(bot, message, post, function(response) {
 
-                // Maker
-                if ( post.makers.length > 0 ) {
+                    // Maker
+                    if ( post.makers.length > 0 ) {
 
-                    // Maker - Information
-                    sendPostInfo_makerInfo(bot, message, post, function(response) {
-                        
-                        // Maker - Message
-                        sendPostInfo_makerMessage(bot, message, post, function(response) {
+                        // Maker - Information
+                        sendPostInfo_makerInfo(bot, message, post, function(response) {
+                            
+                            // Maker - Message
+                            sendPostInfo_makerMessage(bot, message, post, function(response) {
+
+                                // Media
+                                sendPostInfo_media(bot, message, post, function(response) {
+
+                                    sendPostInfo_CTA(bot, message, post);
+
+                                })
+
+                            })
+                        })
+
+                    } else {
+
+                        bot.reply(message, "Looks like none of the makers have been identified yet", function(err, response) {
+                            if (err) console.log(err)
 
                             // Media
                             sendPostInfo_media(bot, message, post, function(response) {
@@ -460,26 +479,16 @@ function getPostInfo(bot, message, postID) {
                                 sendPostInfo_CTA(bot, message, post);
 
                             })
+                        });
+                    }
 
-                        })
-                    })
+                })
 
-                } else {
 
-                    bot.reply(message, "Looks like none of the makers have been identified yet", function(err, response) {
-                        if (err) console.log(err)
-
-                        // Media
-                        sendPostInfo_media(bot, message, post, function(response) {
-
-                            sendPostInfo_CTA(bot, message, post);
-
-                        })
-                    });
-                }
-
+            }) // END!
+            .catch(function(err) {
+                console.log("Error", err);
             })
-        }) // END!
 
     }) // End http get
 }
