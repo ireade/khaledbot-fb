@@ -1,5 +1,4 @@
 var Botkit = require('botkit')
-var https = require("https")
 
 var accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
 var verifyToken = process.env.FACEBOOK_VERIFY_TOKEN
@@ -33,13 +32,8 @@ controller.setupWebserver(port, function (err, webserver) {
 
 
 
-/****  OTHER EVENTS  ************************/
-
-
-
 controller.on('message_received', function (bot, message) {
-    bot.reply(message, "Sorry, I didn't get that. Say help if you need some help");
-
+    bot.reply(message, "Hello, world!");
 })
 
 
