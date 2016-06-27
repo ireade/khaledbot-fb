@@ -46,9 +46,23 @@ var todos = [];
 
 /* *****************************
 
+    HELPER FUNCTIONS
+
+***************************** */
+
+var handleError = function(bot, message, err) {
+  console.log(err);
+  var reply = "Oops, looks like there was an error";
+  bot.reply(message, reply);
+}
+
+
+/* *****************************
+
     CRUD
 
 ***************************** */
+
 
 /*  CREATE ---------------------- */
 
@@ -73,10 +87,103 @@ var createTodo = function(bot, message) {
       if (err) return handleError(bot, message, err);
 
       // Success message
-      bot.reply(message, "I've added *"+todoText+"* to your todos. Say `list` to see your todos");
+      bot.reply(message, "I've added &quot;"+todoText+"&quot; to your todos. Say &quot;list&quot; to see your todos");
     });
 
 }
+
+
+
+
+/*  READ (ALL) ---------------------- */
+
+var getTodosList = function(userID) {
+  return new Promise(function(resolve, reject) {
+
+    // Create empty array for todos
+    var todos = [];
+
+    // Check if there is a value
+    firebase.database().ref('todos/' + userID).on("value", function(snapshot) {
+      if ( !snapshot.val() ) { resolve(todos) }
+    })
+
+    // Get array
+    firebase.database().ref('todos/' + userID).on("child_added", function(snapshot) {
+      // Push to the todos array
+      todos.push( snapshot.val() )
+      resolve(todos)
+    });
+
+  })
+}
+
+
+var getTodoTemplate = function(todo) {
+
+  return {
+    "title": todo.text,
+    "subtitle": todo.completed ? "Completed" : "Incomplete",
+    "buttons": [
+      {
+        "type":"postback",
+        "payload": "postInfo_",
+        "title":"Mark as Done"
+      }        
+    ]
+  }
+
+}
+
+
+var listTodos = function(bot, message, type) {
+  return new Promise(function(resolve, reject) { 
+
+    getTodosList(message.user).then(function(todos) {
+
+      var todoList = "";
+      var pretext = "";
+
+      var todoAttachments = [];
+
+      // Loop through all todos
+      for ( var i = 0; i < todos.length; i++ ) {
+
+        todoAttachments.push( todos[i] );
+      } 
+
+
+      // if ( todoList == "" ) {
+      //   todoList = "Looks like you haven't got any todos yet. Say `todo [Task]` to add one. For example, `todo Be awesome`"
+      // }
+
+
+      var reply = {
+        attachment: {
+          type: 'template',
+          payload: {
+          template_type: 'generic',
+          elements: todoAttachments
+          }
+        }
+      }
+
+      bot.reply(message, reply, function(err) {
+        if (err) return handleError(bot, message, err);
+
+        if ( todoAttachments.length > 0 ) {
+          bot.reply(message, "Say `done [task index]` to mark a todo as completed, or `delete [task index]` to delete it");
+        }
+          
+      });
+
+    }) // end getTodosList
+
+  })
+}
+
+
+
 
 
 
@@ -85,6 +192,19 @@ var createTodo = function(bot, message) {
     CONTROLLER
 
 ***************************** */
+
+controller.hears(["list"], contexts, function(bot, message) {
+
+  var messageText = message.text.toLowerCase();
+
+  if ( messageText.indexOf("todo") > -1 ) {
+    listTodos(bot, message, "todo");
+  } else if ( messageText.indexOf("done") > -1 ) {
+    listTodos(bot, message, "done");
+  } else {
+    listTodos(bot, message, "all");
+  }
+})
 
 controller.hears("todo", 'message_received', function(bot, message) {
   createTodo(bot, message);
