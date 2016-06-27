@@ -87,7 +87,7 @@ var createTodo = function(bot, message) {
       if (err) return handleError(bot, message, err);
 
       // Success message
-      bot.reply(message, "I've added &quot;"+todoText+"&quot; to your todos. Say &quot;list&quot; to see your todos");
+      bot.reply(message, "I've added "+todoText+" to your todos. Say list to see your todos");
     });
 
 }
@@ -148,8 +148,7 @@ var listTodos = function(bot, message, type) {
 
       // Loop through all todos
       for ( var i = 0; i < todos.length; i++ ) {
-
-        todoAttachments.push( todos[i] );
+        todoAttachments.push( getTodoTemplate(todos[i]) );
       } 
 
 
