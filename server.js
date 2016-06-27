@@ -193,7 +193,7 @@ var listTodos = function(bot, message, type) {
 
 ***************************** */
 
-controller.hears(["list"], contexts, function(bot, message) {
+controller.hears(["list"], 'message_received', function(bot, message) {
 
   var messageText = message.text.toLowerCase();
 
