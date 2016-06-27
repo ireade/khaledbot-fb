@@ -86,7 +86,7 @@ var createTodo = function(bot, message) {
 
 ***************************** */
 
-controller.hears("todo", contexts, function(bot, message) {
+controller.hears("todo", 'message_received', function(bot, message) {
   createTodo(bot, message);
 })
 
