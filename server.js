@@ -103,7 +103,11 @@ var setupAttachment = function(item) {
 	var subtitle = item.snippet;
 	subtitle = subtitle.replace('<span class="searchmatch">', '');
 	subtitle = subtitle.replace('</span>', '');
-	subtitle = subtitle.substring(0, 79);
+	subtitle = subtitle.replace('&quot;', '');
+	subtitle = subtitle.substring(0, 75) + '...';
+
+	console.log(subtitle);
+
 
 	var attachment = {
 		'title': item.title,
@@ -191,18 +195,9 @@ var search = function(bot, message) {
 
 
 controller.hears('help', 'message_received', function(bot, message) {
-
 	bot.reply(message, 'You need help');
-
 });
 
-
-controller.on('message_received', function (bot, message) {
-
-	bot.reply(message, 'Searching...');
-	search(bot, message);
-
-});
 
 
 controller.on('facebook_postback', function (bot, message) {
@@ -225,6 +220,15 @@ controller.on('facebook_postback', function (bot, message) {
 });
 
 
+
+controller.on('message_received', function (bot, message) {
+
+	console.log(message);
+
+	bot.reply(message, 'Searching...');
+	search(bot, message);
+
+});
 
 
 controller.on('facebook_optin', function (bot, message) {
