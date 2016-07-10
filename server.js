@@ -191,14 +191,13 @@ var summarize = function(bot, message) {
 
 
 	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"');
-
 	
 	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&prop=revisions&titles='+pageTitleUrlEncoded+'&rvprop=content|timestamp|user&rvlimit=1&rvparse=true&rvsection=0';
 
 	fetch(url)
 	.then(function(response) {
 
-		// GET REVISION OBJECT
+		// 1- GET REVISION OBJECT
 
 		var pages = response.query.pages;
 		var result = pages[Object.keys(pages)[0]];
@@ -207,25 +206,26 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
-		// GET BASIC SUMMARY
+		// 2- GET BASIC SUMMARY
+
 		var revision = result.revisions[0];
 
 		var title = result.title;
-
 		var reply = 'Summary here for - '+title;
 
-		bot.reply(message, reply, function(err, response) {
+		bot.reply(message, reply, function(err) {
 			return Promise.resolve(result);
 		});
 
 	})
 	.then(function(result) {
 
+		bot.reply(message, 'Revision author next');
+
 		// GET REVISION AUTHOR
 		var revision = result.revisions[0];
 
-		bot.reply(message, 'Revision author next');
-
+	
 		if ( revision.anon ) {
 			return Promise.resolve(result);
 		}
@@ -241,11 +241,12 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
+		bot.reply(message, 'Buttons next');
+
 		// BUTTONS
 		var revision = result.revisions[0];
 
-		bot.reply(message, 'Buttons next');
-
+		
 		var titleWithUnderscores = result.title;
 		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
 
