@@ -143,7 +143,7 @@ var search = function(bot, message) {
 		var searchResults = response.query.search;
 
 		if ( searchResults.length === 0 ) {
-			return Promise.resolve('Looks like nothing was found for your search...');
+			return Promise.resolve('Sorry, there was nothing found on Wikipedia about "'+query+'"');
 		}
 
 		var elements = [];
@@ -185,10 +185,17 @@ var summarize = function(bot, message) {
 
 	var page = message.payload.split('summary_')[1];
 
-	var pageTitleUrlEncoded = page.replace('_', '%20');
+	var pageTitleUrlEncoded = page.replace(/_/g, '%20');
+	var pageTitleNormal = page.replace(/_/g, ' ');
 
-	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&prop=revisions&titles='+pageTitleUrlEncoded+'&rvprop=content&rvlimit=1&rvparse=true';
 
+	bot.reply(message, 'Getting a summary for '+pageTitleNormal);
+
+	
+
+	
+
+	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&prop=revisions&titles='+pageTitleUrlEncoded+'&rvprop=content|timestamp|user&rvlimit=1&rvparse=true&rvsection=0';
 
 	fetch(url)
 	.then(function(response) {
@@ -241,7 +248,7 @@ controller.on('message_received', function (bot, message) {
 
 	if ( message.text.indexOf('summary_') > -1 ) { return; }
 
-	bot.reply(message, 'Searching...');
+	bot.reply(message, 'Searching on Wikipedia for "'+message.text+'"');
 	search(bot, message);
 
 });
