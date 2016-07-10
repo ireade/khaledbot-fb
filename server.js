@@ -207,6 +207,7 @@ var summarize = function(bot, message) {
 	.then(function(result) {
 
 		// 2- GET BASIC SUMMARY
+		consolelog(result);
 
 		var revision = result.revisions[0];
 
@@ -225,7 +226,6 @@ var summarize = function(bot, message) {
 		// GET REVISION AUTHOR
 		var revision = result.revisions[0];
 
-	
 		if ( revision.anon ) {
 			return Promise.resolve(result);
 		}
