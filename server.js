@@ -198,6 +198,8 @@ var summarize = function(bot, message) {
 	fetch(url)
 	.then(function(response) {
 
+		// GET REVISION OBJECT
+
 		var foo = response.query.pages;
 		var revision = foo[Object.keys(foo)[0]];
 		return Promise.resolve(revision);
@@ -205,11 +207,11 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
-		bot.reply(message, 'Revision stuffz - '+ result.title);
+		// 
 
 		var title = result.title;
 
-		var reply = 'this is a reply for - '+title;
+		var reply = 'Summary here for - '+title;
 
 		bot.reply(message, reply, function(err, response) {
 			return Promise.resolve(result);
@@ -218,14 +220,44 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
+		if ( result.anon ) {
+			return Promise.resolve(result);
+		}
+
 		var rawDate = result.timestamp;
 
 
 		var reply = 'This was last edited by ' + result.user;
 
 		bot.reply(message, reply, function(err, response) {
-			//return Promise.resolve(result);
+			return Promise.resolve(result);
 		});
+
+	})
+	.then(function(result) {
+
+		var titleWithUnderscores = result.title;
+		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
+
+		var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
+
+
+		var reply = {
+			attachment: {
+				type: 'template',
+				payload: {
+					template_type: 'button',
+					text: 'What would you like to do next?',
+					buttons: [
+						{
+							type: 'web_url',
+							url: url,
+							title: 'View '
+						}
+					]
+				}
+			}
+		};
 
 	});
 
