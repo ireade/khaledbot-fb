@@ -218,12 +218,11 @@ var summarize = function(bot, message) {
 	.then(function(result) {
 
 		// 2- GET BASIC SUMMARY
-		console.log(result);
 
 		var revision = result.revisions[0];
+		console.log(revision);
 
-		var title = result.title;
-		var reply = 'Summary here for - '+title;
+		var reply = 'SUMMARY WILL GO HERE';
 
 		bot.reply(message, reply, function(err) {
 			return Promise.resolve(result);
@@ -232,7 +231,7 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
-		bot.reply(message, 'Revision author next');
+		bot.reply(message, 'Revision author next...');
 
 		// GET REVISION AUTHOR
 		var revision = result.revisions[0];
