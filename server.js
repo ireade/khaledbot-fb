@@ -31,7 +31,7 @@ var bot = controller.spawn();
 controller.setupWebserver(port, function (err, webserver) {
 	if (err) return console.log(err);
 	controller.createWebhookEndpoints(webserver, bot, function () {
-		console.log('Ready Player 1');
+		console.log('Controller Ready');
 	});
 });
 
@@ -99,12 +99,9 @@ var setupAttachment = function(item) {
 
 	var subtitle = item.snippet;
 	subtitle = subtitle.replace(/<span class="searchmatch">/g, '');
-	subtitle = subtitle.replace(/</span>/g, '');
+	subtitle = subtitle.replace(/<\/span>/g, '');
 	subtitle = subtitle.replace(/&quot;/g, '');
 	subtitle = subtitle.substring(0, 75) + '...';
-
-	console.log(subtitle);
-
 
 	var attachment = {
 		'title': item.title,
