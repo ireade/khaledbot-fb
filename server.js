@@ -84,6 +84,7 @@ var handleError = function(bot, message, err) {
 	bot.reply(message, reply);
 };
 
+
 /* *****************************
 
     WIKI
@@ -192,13 +193,10 @@ var summarize = function(bot, message) {
 	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"');
 
 	
-
 	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&prop=revisions&titles='+pageTitleUrlEncoded+'&rvprop=content|timestamp|user&rvlimit=1&rvparse=true&rvsection=0';
 
 	fetch(url)
 	.then(function(response) {
-
-		bot.reply(message, 'Gotten response');
 
 		var foo = response.query.pages;
 		var revision = foo[Object.keys(foo)[0]];
@@ -206,6 +204,8 @@ var summarize = function(bot, message) {
 
 	})
 	.then(function(result) {
+
+		bot.reply(message, 'Revision stuffz - '+ revision.title);
 
 		var title = revision.title;
 
@@ -273,11 +273,8 @@ controller.on('facebook_postback', function (bot, message) {
 
 
 
-
-
-
 controller.on('facebook_optin', function (bot, message) {
-	var reply = 'Welcome! I have some products for you';
+	var reply = 'Welcome!!';
 	bot.reply(message, reply);
 });
 
