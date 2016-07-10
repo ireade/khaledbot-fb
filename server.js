@@ -231,14 +231,13 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
-		bot.reply(message, 'Revision author next...');
-
 		// GET REVISION AUTHOR
 		var revision = result.revisions[0];
 
 		if ( revision.anon ) {
 			return Promise.resolve(result);
 		}
+		
 
 		//var rawDate = revision.timestamp;
 
