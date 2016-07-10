@@ -189,9 +189,7 @@ var summarize = function(bot, message) {
 	var pageTitleNormal = page.replace(/_/g, ' ');
 
 
-	bot.reply(message, 'Getting a summary for '+pageTitleNormal);
-
-	
+	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"');
 
 	
 
@@ -199,6 +197,8 @@ var summarize = function(bot, message) {
 
 	fetch(url)
 	.then(function(response) {
+
+		bot.reply(message, 'Gotten response');
 
 		var foo = response.query.pages;
 		var revision = foo[Object.keys(foo)[0]];
@@ -248,7 +248,7 @@ controller.on('message_received', function (bot, message) {
 
 	if ( message.text.indexOf('summary_') > -1 ) { return; }
 
-	bot.reply(message, 'Searching on Wikipedia for "'+message.text+'"');
+	bot.reply(message, 'Searching Wikipedia for "'+message.text+'"');
 	search(bot, message);
 
 });
@@ -265,7 +265,7 @@ controller.on('facebook_postback', function (bot, message) {
 		summarize(bot, message);
 		break;
 	default:
-		var err = 'Uh oh! Looks like there was a prblem';
+		var err = 'Uh oh! Looks like there was a problem';
 		handleError(bot, message, err);
 	}
 
