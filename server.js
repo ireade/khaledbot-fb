@@ -88,7 +88,7 @@ var fetch = function(url) {
 
 /* *****************************
 
-    CRUD
+    WIKI
 
 ***************************** */
 
@@ -101,9 +101,9 @@ var setupAttachment = function(item) {
 	var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
 
 	var subtitle = item.snippet;
-	subtitle = subtitle.replace('<span class="searchmatch">', '');
-	subtitle = subtitle.replace('</span>', '');
-	subtitle = subtitle.replace('&quot;', '');
+	subtitle = subtitle.replace('<span class="searchmatch">', 'X');
+	subtitle = subtitle.replace('</span>', 'X');
+	subtitle = subtitle.replace('&quot;', 'X');
 	subtitle = subtitle.substring(0, 75) + '...';
 
 	console.log(subtitle);
@@ -133,9 +133,7 @@ var setupAttachment = function(item) {
 
 
 
-/*  UPDATE (Mark as Complete) ---------------------- */
-
-
+/*  SEARCH ---------------------- */
 
 
 var search = function(bot, message) {
@@ -144,7 +142,6 @@ var search = function(bot, message) {
 	query = encodeURI(query);
 
 	var url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='+query+'&srprop=timestamp|snippet&utf8=&format=json';
-
 
 	fetch(url)
 	.then(function(response) {
@@ -176,14 +173,50 @@ var search = function(bot, message) {
 
 	})
 	.then(function(reply) {
-
 		bot.reply(message, reply);
-
+	})
+	.catch(function(err) {
+		handleError(bot, message, err);
 	});
     
     
 };
 
+
+
+
+/*  SUMMARY FOR PAGE ---------------------- */
+
+var summarize = function(bot, message) {
+
+	var page = message.payload.split('summary_')[1];
+
+	var pageTitleUrlEncoded = page.replace('_', '%20');
+
+	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&prop=revisions&titles='+pageTitleUrlEncoded+'&rvprop=content&rvlimit=1&rvparse=true';
+
+
+	fetch(url)
+	.then(function(response) {
+
+
+		var foo = response.query.pages;
+
+		var revision = foo[Object.keys(foo)[0]];
+
+
+		var title = revision.title;
+
+		var reply = 'this is a reply for - '+title;
+
+		bot.reply(message, reply);
+
+
+
+
+	});
+
+};
 
 
 
@@ -198,29 +231,6 @@ controller.hears('help', 'message_received', function(bot, message) {
 	bot.reply(message, 'You need help');
 });
 
-
-
-controller.on('facebook_postback', function (bot, message) {
-
-	var postbackType = message.payload;
-	postbackType = postbackType.split('_')[0];
-
-	switch(postbackType) {
-	case 'summary':
-		var reply = 'summary postback';
-		bot.reply(message, reply);
-		break;
-
-	default:
-		var reply = 'Oops';
-		bot.reply(message, reply);
-	}
-
-
-});
-
-
-
 controller.on('message_received', function (bot, message) {
 
 	console.log(message);
@@ -231,12 +241,31 @@ controller.on('message_received', function (bot, message) {
 });
 
 
+
+controller.on('facebook_postback', function (bot, message) {
+
+	var postbackType = message.payload;
+	postbackType = postbackType.split('_')[0];
+
+	switch(postbackType) {
+	case 'summary':
+		summarize(bot, message);
+		break;
+	default:
+		var err = 'Uh oh! Looks like there was a prblem';
+		handleError(bot, message, err);
+	}
+
+});
+
+
+
+
+
+
 controller.on('facebook_optin', function (bot, message) {
 	var reply = 'Welcome! I have some products for you';
-	bot.reply(message, reply, function(err) {
-		if (err) handleError(bot, message, err);
-	});
-
+	bot.reply(message, reply);
 });
 
 
