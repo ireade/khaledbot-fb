@@ -207,7 +207,7 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
-		// 
+		// GET BASIC SUMMARY
 
 		var title = result.title;
 
@@ -219,6 +219,10 @@ var summarize = function(bot, message) {
 
 	})
 	.then(function(result) {
+
+		// GET REVISION AUTHOR
+
+		bot.reply(message, 'Revision author next');
 
 		if ( result.anon ) {
 			return Promise.resolve(result);
@@ -235,6 +239,10 @@ var summarize = function(bot, message) {
 
 	})
 	.then(function(result) {
+
+		// BUTTONS
+
+		bot.reply(message, 'Buttons next');
 
 		var titleWithUnderscores = result.title;
 		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
