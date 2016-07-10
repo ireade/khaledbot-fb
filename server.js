@@ -95,8 +95,10 @@ var fetch = function(url) {
 
 var setupAttachment = function(item) {
 
-	var url = 'https://en.wikipedia.org/wiki/'+item.title;
-	url = url.replace(/ /g, '_');
+	var titleWithUnderscores = item.title;
+	titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
+
+	var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
 
 	var subtitle = item.snippet;
 	subtitle = subtitle.replace('<span class="searchmatch">', '');
@@ -109,7 +111,7 @@ var setupAttachment = function(item) {
 		'buttons':[
 			{
 				'type':'postback',
-				'payload': 'postInfo_',
+				'payload': 'summary_'+titleWithUnderscores,
 				'title':'Summary'
 			},
 			{
@@ -198,8 +200,38 @@ controller.hears('help', 'message_received', function(bot, message) {
 controller.on('message_received', function (bot, message) {
 
 	bot.reply(message, 'Searching...');
-
 	search(bot, message);
+
+});
+
+
+controller.on('facebook_postback', function (bot, message) {
+
+	var postbackType = message.payload;
+	postbackType = postbackType.split('_')[0];
+
+	switch(postbackType) {
+	case 'summary':
+		var reply = 'summary postback';
+		bot.reply(message, reply);
+		break;
+
+	default:
+		var reply = 'Oops';
+		bot.reply(message, reply);
+	}
+
+
+});
+
+
+
+
+controller.on('facebook_optin', function (bot, message) {
+	var reply = 'Welcome! I have some products for you';
+	bot.reply(message, reply, function(err) {
+		if (err) handleError(bot, message, err);
+	});
 
 });
 
