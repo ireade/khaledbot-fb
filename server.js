@@ -84,6 +84,17 @@ var handleError = function(bot, message, err) {
 	bot.reply(message, reply);
 };
 
+var momentDate = function(rawDate) {
+
+	var date = rawDate.split('T')[0];
+
+	var m = moment(date).calendar(null, {
+		sameElse: 'ddd Do MMM YYYY'
+	});
+
+	return m;
+};
+
 
 /* *****************************
 
@@ -207,7 +218,7 @@ var summarize = function(bot, message) {
 	.then(function(result) {
 
 		// 2- GET BASIC SUMMARY
-		consolelog(result);
+		console.log(result);
 
 		var revision = result.revisions[0];
 
@@ -230,7 +241,7 @@ var summarize = function(bot, message) {
 			return Promise.resolve(result);
 		}
 
-		var rawDate = revision.timestamp;
+		//var rawDate = revision.timestamp;
 
 		var reply = 'This was last edited by ' + revision.user;
 
@@ -255,15 +266,15 @@ var summarize = function(bot, message) {
 
 		var reply = {
 			attachment: {
-				type: 'template',
-				payload: {
-					template_type: 'button',
-					text: 'Would you like to read more?',
-					buttons: [
+				'type': 'template',
+				'payload': {
+					'template_type': 'button',
+					'text': 'Would you like to read more?',
+					'buttons': [
 						{
-							type: 'web_url',
-							url: url,
-							title: 'View on Wikipedia'
+							'type': 'web_url',
+							'url': url,
+							'title': 'View on Wikipedia'
 						}
 					]
 				}
