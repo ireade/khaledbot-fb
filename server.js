@@ -229,33 +229,31 @@ var summarize = function(bot, message) {
 		});
 
 	})
-	.then(function(result) {
+	// .then(function(result) {
 
-		// GET REVISION AUTHOR
-		var revision = result.revisions[0];
+	// 	// GET REVISION AUTHOR
+	// 	var revision = result.revisions[0];
 
-		if ( revision.anon ) {
-			return Promise.resolve(result);
-		}
-		
+	// 	if ( revision.anon ) {
+	// 		return Promise.resolve(result);
+	// 	}
 
-		//var rawDate = revision.timestamp;
 
-		var reply = 'This was last edited by ' + revision.user;
+	// 	//var rawDate = revision.timestamp;
 
-		bot.reply(message, reply, function(err, response) {
-			return Promise.resolve(result);
-		});
+	// 	var reply = 'This was last edited by ' + revision.user;
 
-	})
+	// 	bot.reply(message, reply, function(err, response) {
+	// 		return Promise.resolve(result);
+	// 	});
+
+	// })
 	.then(function(result) {
 
 		bot.reply(message, 'Buttons next');
 
 		// BUTTONS
-		var revision = result.revisions[0];
-
-		
+	
 		var titleWithUnderscores = result.title;
 		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
 
