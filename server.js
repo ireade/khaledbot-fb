@@ -200,14 +200,15 @@ var summarize = function(bot, message) {
 
 		// GET REVISION OBJECT
 
-		var foo = response.query.pages;
-		var revision = foo[Object.keys(foo)[0]];
-		return Promise.resolve(revision);
+		var pages = response.query.pages;
+		var result = pages[Object.keys(pages)[0]];
+		return Promise.resolve(result);
 
 	})
 	.then(function(result) {
 
 		// GET BASIC SUMMARY
+		var revision = result.revisions[0];
 
 		var title = result.title;
 
@@ -221,17 +222,15 @@ var summarize = function(bot, message) {
 	.then(function(result) {
 
 		// GET REVISION AUTHOR
+		var revision = result.revisions[0];
 
-		bot.reply(message, 'Revision author next');
-
-		if ( result.anon ) {
+		if ( revision.anon ) {
 			return Promise.resolve(result);
 		}
 
-		var rawDate = result.timestamp;
+		var rawDate = revision.timestamp;
 
-
-		var reply = 'This was last edited by ' + result.user;
+		var reply = 'This was last edited by ' + revision.user;
 
 		bot.reply(message, reply, function(err, response) {
 			return Promise.resolve(result);
@@ -241,8 +240,7 @@ var summarize = function(bot, message) {
 	.then(function(result) {
 
 		// BUTTONS
-
-		bot.reply(message, 'Buttons next');
+		var revision = result.revisions[0];
 
 		var titleWithUnderscores = result.title;
 		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
@@ -255,12 +253,12 @@ var summarize = function(bot, message) {
 				type: 'template',
 				payload: {
 					template_type: 'button',
-					text: 'What would you like to do next?',
+					text: 'Would you like to read more?',
 					buttons: [
 						{
 							type: 'web_url',
 							url: url,
-							title: 'View '
+							title: 'View on Wikipedia'
 						}
 					]
 				}
