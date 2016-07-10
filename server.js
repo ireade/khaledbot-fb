@@ -55,9 +55,9 @@ controller.setupWebserver(port, function (err, webserver) {
 ***************************** */
 
 var handleError = function(bot, message, err) {
-  console.log(err);
-  var reply = "Oops, looks like there was an error";
-  bot.reply(message, reply);
+	console.log(err);
+	var reply = 'Oops, looks like there was an error';
+	bot.reply(message, reply);
 };
 
 
@@ -96,11 +96,16 @@ var fetch = function(url) {
 var setupAttachment = function(item) {
 
 	var url = 'https://en.wikipedia.org/wiki/'+item.title;
-	url = url.replace(/ /g, "_");
+	url = url.replace(/ /g, '_');
+
+	var subtitle = item.snippet;
+	subtitle = subtitle.replace('<span class="searchmatch">', '');
+	subtitle = subtitle.replace('</span>', '');
+	subtitle = subtitle.substring(0, 79);
 
 	var attachment = {
 		'title': item.title,
-		'subtitle': 'Subtitle',
+		'subtitle': subtitle,
 		'buttons':[
 			{
 				'type':'postback',
@@ -136,18 +141,20 @@ var search = function(bot, message) {
 
 
 	fetch(url)
-	.then(function(results) {
+	.then(function(response) {
 
-		results = results.query.search;
+		var searchResults = response.query.search;
+
+		if ( searchResults.length === 0 ) {
+			return Promise.resolve('Looks like nothing was found for your search...');
+		}
 
 		var elements = [];
 
 		for ( var i = 0; i < 10; i++ ) {
-
-			if ( !results[i] ) { break; }
-			elements.push( setupAttachment(results[i]) );
+			if ( !searchResults[i] ) { break; }
+			elements.push( setupAttachment(searchResults[i]) );
 		}
-
 
 		var reply = {
 			attachment: {
@@ -159,11 +166,14 @@ var search = function(bot, message) {
 			}
 		};
 
+		return Promise.resolve(reply);
+
+	})
+	.then(function(reply) {
+
 		bot.reply(message, reply);
 
-
 	});
-
     
     
 };
@@ -177,22 +187,12 @@ var search = function(bot, message) {
 
 ***************************** */
 
-// controller.hears(["list"], 'message_received', function(bot, message) {
 
-//   var messageText = message.text.toLowerCase();
+controller.hears('help', 'message_received', function(bot, message) {
 
-//   if ( messageText.indexOf("todo") > -1 ) {
-//     listTodos(bot, message, "todo");
-//   } else if ( messageText.indexOf("done") > -1 ) {
-//     listTodos(bot, message, "done");
-//   } else {
-//     listTodos(bot, message, "all");
-//   }
-// })
+	bot.reply(message, 'You need help');
 
-// controller.hears("todo", 'message_received', function(bot, message) {
-//   createTodo(bot, message);
-// })
+});
 
 
 controller.on('message_received', function (bot, message) {
