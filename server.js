@@ -224,6 +224,8 @@ var summarize = function(bot, message) {
 		// GET REVISION AUTHOR
 		var revision = result.revisions[0];
 
+		bot.reply(message, 'Revision author next');
+
 		if ( revision.anon ) {
 			return Promise.resolve(result);
 		}
@@ -241,6 +243,8 @@ var summarize = function(bot, message) {
 
 		// BUTTONS
 		var revision = result.revisions[0];
+
+		bot.reply(message, 'Buttons next');
 
 		var titleWithUnderscores = result.title;
 		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
@@ -264,6 +268,8 @@ var summarize = function(bot, message) {
 				}
 			}
 		};
+
+		bot.reply(message, reply);
 
 	});
 
