@@ -205,9 +205,9 @@ var summarize = function(bot, message) {
 	})
 	.then(function(result) {
 
-		bot.reply(message, 'Revision stuffz - '+ revision.title);
+		bot.reply(message, 'Revision stuffz - '+ result.title);
 
-		var title = revision.title;
+		var title = result.title;
 
 		var reply = 'this is a reply for - '+title;
 
