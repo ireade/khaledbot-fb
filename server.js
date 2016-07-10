@@ -4,7 +4,7 @@ var Botkit = require('botkit');
 var https = require('https');
 
 // var firebase = require('firebase');
-// var moment = require('moment');
+var moment = require('moment');
 
 var accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 var verifyToken = process.env.FACEBOOK_VERIFY_TOKEN;
@@ -54,13 +54,6 @@ controller.setupWebserver(port, function (err, webserver) {
 
 ***************************** */
 
-var handleError = function(bot, message, err) {
-	console.log(err);
-	var reply = 'Oops, looks like there was an error';
-	bot.reply(message, reply);
-};
-
-
 var fetch = function(url) {
 	return new Promise(function(resolve, reject) {
 
@@ -85,13 +78,17 @@ var fetch = function(url) {
 	});
 };
 
+var handleError = function(bot, message, err) {
+	console.log(err);
+	var reply = 'Oops, looks like there was an error - "' + err + '"';
+	bot.reply(message, reply);
+};
 
 /* *****************************
 
     WIKI
 
 ***************************** */
-
 
 var setupAttachment = function(item) {
 
@@ -101,9 +98,9 @@ var setupAttachment = function(item) {
 	var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
 
 	var subtitle = item.snippet;
-	subtitle = subtitle.replace('<span class="searchmatch">', 'X');
-	subtitle = subtitle.replace('</span>', 'X');
-	subtitle = subtitle.replace('&quot;', 'X');
+	subtitle = subtitle.replace(/<span class="searchmatch">/g, '');
+	subtitle = subtitle.replace(/</span>/g, '');
+	subtitle = subtitle.replace(/&quot;/g, '');
 	subtitle = subtitle.substring(0, 75) + '...';
 
 	console.log(subtitle);
@@ -199,20 +196,32 @@ var summarize = function(bot, message) {
 	fetch(url)
 	.then(function(response) {
 
-
 		var foo = response.query.pages;
-
 		var revision = foo[Object.keys(foo)[0]];
+		return Promise.resolve(revision);
 
+	})
+	.then(function(result) {
 
 		var title = revision.title;
 
 		var reply = 'this is a reply for - '+title;
 
-		bot.reply(message, reply);
+		bot.reply(message, reply, function(err, response) {
+			return Promise.resolve(result);
+		});
+
+	})
+	.then(function(result) {
+
+		var rawDate = result.timestamp;
 
 
+		var reply = 'This was last edited by ' + result.user;
 
+		bot.reply(message, reply, function(err, response) {
+			//return Promise.resolve(result);
+		});
 
 	});
 
@@ -233,7 +242,7 @@ controller.hears('help', 'message_received', function(bot, message) {
 
 controller.on('message_received', function (bot, message) {
 
-	console.log(message);
+	if ( message.text.indexOf('summary_') > -1 ) { return; }
 
 	bot.reply(message, 'Searching...');
 	search(bot, message);
