@@ -226,23 +226,44 @@ var getParts = function(extract) {
 
 	var parts = [];
 
-	var first = extract.substring(0, 320);
-	var firstSentenceEndIndex = first.lastIndexOf('.') + 1;
-	first = extract.substring(0, firstSentenceEndIndex);
-	parts.push(first);
+	// var first = extract.substring(0, 320);
+	// var firstSentenceEndIndex = first.lastIndexOf('.') + 1;
+	// first = extract.substring(0, firstSentenceEndIndex);
+	// parts.push(first);
 
-	var second = extract.substring(firstSentenceEndIndex + 1, firstSentenceEndIndex + 320);
-	console.log("initial second - " + second);
-	var secondSentenceEndIndex = second.lastIndexOf('.') + 1;
-	second = extract.substring(firstSentenceEndIndex + 1, secondSentenceEndIndex);
-	parts.push(second);
+	// var second = extract.substring(firstSentenceEndIndex + 1, firstSentenceEndIndex + 320);
+	// var secondSentenceEndIndex = firstSentenceEndIndex + second.lastIndexOf('.') + 1;
+	// second = extract.substring(firstSentenceEndIndex + 1, secondSentenceEndIndex);
+	// parts.push(second);
 
-	var third = extract.substring(secondSentenceEndIndex + 1, secondSentenceEndIndex + 320);
-	var thirdSentenceEndIndex = third.lastIndexOf('.') + 1;
-	third = extract.substring(secondSentenceEndIndex + 1, thirdSentenceEndIndex);
-	parts.push(third);
+	// var third = extract.substring(secondSentenceEndIndex + 1, secondSentenceEndIndex + 320);
+	// var thirdSentenceEndIndex = secondSentenceEndIndex + third.lastIndexOf('.') + 1;
+	// third = extract.substring(secondSentenceEndIndex + 1, thirdSentenceEndIndex);
+	// parts.push(third);
 
-	console.log("secondSentenceEndIndex - " + secondSentenceEndIndex);
+
+	var start = 0;
+	var end = 320;
+
+	function foo() {
+
+		var part = extract.substring(start, end);
+
+		var sentenceEndIndex = start + part.lastIndexOf('.') + 1;
+
+		part = extract.substring(start, end);
+
+		parts.push(part);
+
+		start = sentenceEndIndex;
+		end = start + 320;
+
+	}
+
+	foo();
+	foo();
+	foo();
+
 
 	return parts;
 
