@@ -1,15 +1,11 @@
 {
-  "name": "Todobot",
+  "name": "WikiBot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Facebook Messenger Bot for Wikipedia",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "author": "Ire Aderinokun",
   "dependencies": {
-    "botkit": "^0.1.1",
-    "firebase": "^3.0.1",
-    "moment": "^2.13.0"
+    "botkit": "^0.1.1"
   }
 }
