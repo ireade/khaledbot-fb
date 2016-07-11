@@ -106,7 +106,7 @@ var momentDate = function(rawDate) {
 		nextWeek: '[Next] dddd [at] h:mma',
 		lastDay: '[Yesterday at] h:mma',
 		lastWeek: '[Last] dddd [at] h:mma',
-		sameElse: '[on] dddd Do MMMM [at] h:mma'
+		sameElse: '[on] Do MMMM YYYY'
 	});
 
 	return m;
@@ -210,48 +210,51 @@ var search = function(bot, message) {
 
 /*  SUMMARY FOR PAGE ---------------------- */
 
-
-var summarize_summary = function(bot, message, result) {
+var botReply = function(bot, message, reply) {
 	return new Promise(function(resolve, reject) {
-
-		var revision = result.revisions[0];
-		var reply = 'SUMMARY WILL GO HERE';
-
 		bot.reply(message, reply, function(err) {
 			if ( err ) reject(err);
-			resolve(result);
+			resolve();
 		});
-
 	});
 };
 
-var summarize_author = function(bot, message, result) {
+
+
+
+var summarize_extract = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
-		var reply = '';
+		var extract = result.extract;
+		extract = extract.substring(0, 960);
 
-		var revision = result.revisions[0];
 
-		var date = momentDate(revision.timestamp);
+		var parts = extract.match(/.{1,320}/g);
 
-		if ( revision.anon ) {
-			reply = 'This page was last edited ' + date;
-		} else {
-			reply = 'This page was last edited by ' + revision.user + ' ' + date;
+		var sequence = Promise.resolve();
+
+		for ( var i = 0; i < parts.length; i++ ) {
+
+			sequence = sequence.then(function() {
+				var reply = parts[i];
+				return botReply(bot, message, reply);
+			});
+
+			if ( i ===  (parts.length - 1) ) {
+				resolve();
+			}
 		}
 
-		bot.reply(message, reply, function(err) {
-			if ( err ) reject(err);
-			resolve(result);
-		});
+
 
 	});
 };
+
+
 
 var summarize_cta = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
-		var revision = result.revisions[0];
 
 		var titleWithUnderscores = result.title;
 		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
@@ -294,7 +297,7 @@ var summarize = function(bot, message) {
 
 	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"');
 	
-	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&prop=revisions&titles='+pageTitleUrlEncoded+'&rvprop=content|timestamp|user&rvlimit=1&rvparse=true&rvsection=0';
+	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&titles='+pageTitleUrlEncoded+'&prop=extracts&explaintext=&exintro=';
 
 	fetch(url)
 	.then(function(response) {
@@ -306,10 +309,7 @@ var summarize = function(bot, message) {
 
 	})
 	.then(function(result) {
-		return summarize_summary(bot, message, result);
-	})
-	.then(function(result) {
-		return summarize_author(bot, message, result);
+		return summarize_extract(bot, message, result);
 	})
 	.then(function(result) {
 		return summarize_cta(bot, message, result);
