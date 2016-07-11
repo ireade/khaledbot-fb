@@ -224,11 +224,22 @@ var getParts = function(extract) {
 
 	var parts = [];
 
-	var firstSentenceStartIndex = 0;
+	var first = extract.substring(0, 320);
+	var firstSentenceEndIndex = first.lastIndexOf('.');
+	first = extract.substring(0, firstSentenceEndIndex);
+	parts.push(first);
 
-	function foo(start) {
-		
-	}
+	var second = extract.substring(firstSentenceEndIndex, firstSentenceEndIndex + 320);
+	var secondSentenceEndIndex = second.lastIndexOf('.');
+	second = extract.substring(firstSentenceEndIndex, secondSentenceEndIndex);
+	parts.push(second);
+
+	var third = extract.substring(secondSentenceEndIndex, secondSentenceEndIndex + 320);
+	var thirdSentenceEndIndex = third.lastIndexOf('.');
+	third = extract.substring(secondSentenceEndIndex, thirdSentenceEndIndex);
+	parts.push(third);
+
+	return parts;
 
 };
 
@@ -242,31 +253,7 @@ var summarize_extract = function(bot, message, result) {
 		var extract = result.extract;
 		extract = extract.substring(0, 960);
 
-		var parts = [];
-
-		// var firstStartIndex
-
-		// function foo(start) {
-
-		// }
-
-		var first = extract.substring(0, 320);
-		var foo = first.lastIndexOf('.');
-		first = extract.substring(0, foo);
-		parts.push(first);
-
-		var second = extract.substring(first, first + 320);
-		var foo = second.lastIndexOf('.');
-		second = extract.substring(first, foo);
-		parts.push(second);
-
-		var third = extract.substring(second, second + 320);
-		var foo = third.lastIndexOf('.');
-		third = extract.substring(second, foo);
-		parts.push(third);
-
-
-
+		var parts = getParts(extract);
 
 		var sequence = Promise.resolve();
 
