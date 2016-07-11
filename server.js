@@ -229,15 +229,17 @@ var getParts = function(extract) {
 	first = extract.substring(0, firstSentenceEndIndex);
 	parts.push(first);
 
-	var second = extract.substring(firstSentenceEndIndex, firstSentenceEndIndex + 320);
+	var second = extract.substring(firstSentenceEndIndex + 1, firstSentenceEndIndex + 320);
 	var secondSentenceEndIndex = second.lastIndexOf('.');
 	second = extract.substring(firstSentenceEndIndex, secondSentenceEndIndex);
 	parts.push(second);
 
-	var third = extract.substring(secondSentenceEndIndex, secondSentenceEndIndex + 320);
+	var third = extract.substring(secondSentenceEndIndex + 1, secondSentenceEndIndex + 320);
 	var thirdSentenceEndIndex = third.lastIndexOf('.');
 	third = extract.substring(secondSentenceEndIndex, thirdSentenceEndIndex);
 	parts.push(third);
+
+	console.log(parts);
 
 	return parts;
 
@@ -259,7 +261,7 @@ var summarize_extract = function(bot, message, result) {
 
 		parts.forEach(function(part) {
 
-			var reply = part + '...';
+			var reply = part;
 
 			sequence = sequence.then(function() {
 				return botReply(bot, message, reply);
