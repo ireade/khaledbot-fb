@@ -220,6 +220,19 @@ var botReply = function(bot, message, reply) {
 };
 
 
+var getParts = function(extract) {
+
+	var parts = [];
+
+	var firstSentenceStartIndex = 0;
+
+	function foo(start) {
+		
+	}
+
+};
+
+
 
 
 var summarize_extract = function(bot, message, result) {
@@ -229,30 +242,41 @@ var summarize_extract = function(bot, message, result) {
 		var extract = result.extract;
 		extract = extract.substring(0, 960);
 
+		var parts = [];
 
-		var parts = extract.match(/.{1,317}/g);
+		// var firstStartIndex
+
+		// function foo(start) {
+
+		// }
+
+		var first = extract.substring(0, 320);
+		var foo = first.lastIndexOf('.');
+		first = extract.substring(0, foo);
+		parts.push(first);
+
+		var second = extract.substring(first, first + 320);
+		var foo = second.lastIndexOf('.');
+		second = extract.substring(first, foo);
+		parts.push(second);
+
+		var third = extract.substring(second, second + 320);
+		var foo = third.lastIndexOf('.');
+		third = extract.substring(second, foo);
+		parts.push(third);
+
+
 
 
 		var sequence = Promise.resolve();
 
-		var index = 0;
-
 		parts.forEach(function(part) {
 
-			var reply;
-
-			if ( index == (parts.length - 1) ) {
-				reply = part;
-			} else {
-				reply = part + '...';
-			}
+			var reply = part + '...';
 
 			sequence = sequence.then(function() {
 				return botReply(bot, message, reply);
 			});
-
-			index++
-
 		});
 
 		sequence = sequence.then(function() {
