@@ -226,44 +226,27 @@ var getParts = function(extract) {
 
 	var parts = [];
 
-	// var first = extract.substring(0, 320);
-	// var firstSentenceEndIndex = first.lastIndexOf('.') + 1;
-	// first = extract.substring(0, firstSentenceEndIndex);
-	// parts.push(first);
-
-	// var second = extract.substring(firstSentenceEndIndex + 1, firstSentenceEndIndex + 320);
-	// var secondSentenceEndIndex = firstSentenceEndIndex + second.lastIndexOf('.') + 1;
-	// second = extract.substring(firstSentenceEndIndex + 1, secondSentenceEndIndex);
-	// parts.push(second);
-
-	// var third = extract.substring(secondSentenceEndIndex + 1, secondSentenceEndIndex + 320);
-	// var thirdSentenceEndIndex = secondSentenceEndIndex + third.lastIndexOf('.') + 1;
-	// third = extract.substring(secondSentenceEndIndex + 1, thirdSentenceEndIndex);
-	// parts.push(third);
-
 
 	var start = 0;
 	var end = 320;
 
-	function foo() {
+	function getPart() {
 
 		var part = extract.substring(start, end);
 
 		var sentenceEndIndex = start + part.lastIndexOf('.') + 1;
 
-		part = extract.substring(start, end);
+		part = extract.substring(start, sentenceEndIndex);
 
 		parts.push(part);
 
 		start = sentenceEndIndex;
 		end = start + 320;
-
 	}
 
-	foo();
-	foo();
-	foo();
-
+	getPart();
+	getPart();
+	getPart();
 
 	return parts;
 
