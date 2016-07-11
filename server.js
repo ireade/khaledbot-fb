@@ -93,10 +93,8 @@ var handleError = function(bot, message, err) {
 
 
 function Search(bot, message) {
-
 	this.query = message.text;
 	this._init(bot, message);
-
 }
 
 
@@ -132,45 +130,45 @@ Search.prototype._setupTemplateItem = function(item) {
 	return attachment;
 };
 
+Search.prototype._getSearchReply = function(response, prototype) {
+
+	var searchResults = response.query.search;
+
+	if ( searchResults.length === 0 ) {
+		return Promise.resolve('Sorry, there was nothing found on Wikipedia about "'+query+'"');
+	}
+
+	var elements = [];
+
+	for ( var i = 0; i < 10; i++ ) {
+		if ( !searchResults[i] ) { break; }
+		elements.push( prototype._setupTemplateItem(searchResults[i]) );
+	}
+
+	var reply = {
+		attachment: {
+			type: 'template',
+			payload: {
+				template_type: 'generic',
+				elements: elements
+			}
+		}
+	};
+
+	return Promise.resolve(reply);
+};
 
 
-Search.prototype._init = function() {
+Search.prototype._init = function(bot, message) {
 
 	var prototype = this;
 
-	var query = message.text;
-	query = encodeURI(query);
-
+	var query = encodeURI( message.text );
 	var url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='+query+'&srprop=timestamp|snippet&utf8=&format=json';
 
 	fetch(url)
 	.then(function(response) {
-
-		var searchResults = response.query.search;
-
-		if ( searchResults.length === 0 ) {
-			return Promise.resolve('Sorry, there was nothing found on Wikipedia about "'+query+'"');
-		}
-
-		var elements = [];
-
-		for ( var i = 0; i < 10; i++ ) {
-			if ( !searchResults[i] ) { break; }
-			elements.push( prototype._setupTemplateItem(searchResults[i]) );
-		}
-
-		var reply = {
-			attachment: {
-				type: 'template',
-				payload: {
-					template_type: 'generic',
-					elements: elements
-				}
-			}
-		};
-
-		return Promise.resolve(reply);
-
+		return prototype._getSearchReply(response, prototype);
 	})
 	.then(function(reply) {
 		return botReply(bot, message, reply);
@@ -179,7 +177,7 @@ Search.prototype._init = function() {
 		handleError(bot, message, err);
 	});
 
-}
+};
 
 
 
