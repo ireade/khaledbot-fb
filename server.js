@@ -225,11 +225,15 @@ var botReply = function(bot, message, reply) {
 var summarize_extract = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
+		console.log("summarize_extract called");
+
 		var extract = result.extract;
 		extract = extract.substring(0, 960);
 
 
 		var parts = extract.match(/.{1,320}/g);
+
+		console.log(parts);
 
 		var sequence = Promise.resolve();
 
@@ -244,6 +248,14 @@ var summarize_extract = function(bot, message, result) {
 				resolve();
 			}
 		}
+
+
+
+		var reply = parts[0];
+
+		botReply(bot, message, reply).then(function() {
+			resolve(result);
+		});
 
 
 
