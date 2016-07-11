@@ -225,21 +225,21 @@ var getParts = function(extract) {
 	var parts = [];
 
 	var first = extract.substring(0, 320);
-	var firstSentenceEndIndex = first.lastIndexOf('.');
+	var firstSentenceEndIndex = first.lastIndexOf('.') + 1;
 	first = extract.substring(0, firstSentenceEndIndex);
 	parts.push(first);
 
 	var second = extract.substring(firstSentenceEndIndex + 1, firstSentenceEndIndex + 320);
-	var secondSentenceEndIndex = second.lastIndexOf('.');
+	var secondSentenceEndIndex = second.lastIndexOf('.') + 1;
 	second = extract.substring(firstSentenceEndIndex, secondSentenceEndIndex);
 	parts.push(second);
 
 	var third = extract.substring(secondSentenceEndIndex + 1, secondSentenceEndIndex + 320);
-	var thirdSentenceEndIndex = third.lastIndexOf('.');
+	var thirdSentenceEndIndex = third.lastIndexOf('.') + 1;
 	third = extract.substring(secondSentenceEndIndex, thirdSentenceEndIndex);
 	parts.push(third);
 
-	console.log(parts);
+	console.log("firstSentenceEndIndex - " + firstSentenceEndIndex);
 
 	return parts;
 
