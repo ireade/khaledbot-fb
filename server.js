@@ -78,6 +78,35 @@ var handleError = function(bot, message, err) {
 	bot.reply(message, reply);
 };
 
+var getParts = function(extract) {
+
+	extract = extract.substring(0, 960);
+
+	var parts = [];
+
+	var start = 0;
+	var end = 320;
+
+	function getPart() {
+
+		var part = extract.substring(start, end);
+		var sentenceEndIndex = start + part.lastIndexOf('.') + 1;
+		part = extract.substring(start, sentenceEndIndex);
+
+		parts.push(part);
+
+		start = sentenceEndIndex;
+		end = start + 320;
+	}
+
+	getPart();
+	getPart();
+	getPart();
+
+	return parts;
+};
+
+
 
 
 /* *****************************
@@ -93,10 +122,8 @@ var handleError = function(bot, message, err) {
 
 
 function Search(bot, message) {
-	this.query = message.text;
 	this._init(bot, message);
 }
-
 
 Search.prototype._setupTemplateItem = function(item) {
 
@@ -188,38 +215,11 @@ Search.prototype._init = function(bot, message) {
 
 /*  SUMMARY FOR PAGE ---------------------- */
 
-var getParts = function(extract) {
+function Summary(bot, message) {
+	this._init(bot, message);
+}
 
-	extract = extract.substring(0, 960);
-
-	var parts = [];
-
-	var start = 0;
-	var end = 320;
-
-	function getPart() {
-
-		var part = extract.substring(start, end);
-		var sentenceEndIndex = start + part.lastIndexOf('.') + 1;
-		part = extract.substring(start, sentenceEndIndex);
-
-		parts.push(part);
-
-		start = sentenceEndIndex;
-		end = start + 320;
-	}
-
-	getPart();
-	getPart();
-	getPart();
-
-	return parts;
-
-};
-
-
-
-var summarize_extract = function(bot, message, result) {
+Summary.prototype._getExtract = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 		
 		var parts = getParts(result.extract);
@@ -239,14 +239,10 @@ var summarize_extract = function(bot, message, result) {
 			resolve(result);
 		});
 
-
-
 	});
-};
+}
 
-
-
-var summarize_cta = function(bot, message, result) {
+Summary.prototype._getCTA = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
 		var titleWithUnderscores = result.title;
@@ -277,11 +273,14 @@ var summarize_cta = function(bot, message, result) {
 		});
 
 	});
-};
+}
 
 
 
-var summarize = function(bot, message) {
+
+Summary.prototype._init = function(bot, message) {
+
+	var prototype = this;
 
 	var page = message.payload.split('summary_')[1];
 
@@ -299,13 +298,18 @@ var summarize = function(bot, message) {
 		return Promise.resolve(result);
 	})
 	.then(function(result) {
-		return summarize_extract(bot, message, result);
+		return prototype._getExtract(bot, message, result);
 	})
 	.then(function(result) {
-		return summarize_cta(bot, message, result);
+		return prototype._getCTA(bot, message, result);
 	});
+}
 
-};
+
+
+
+
+
 
 
 
@@ -347,7 +351,7 @@ controller.on('facebook_postback', function (bot, message) {
 
 	switch(postbackType) {
 	case 'summary':
-		summarize(bot, message);
+		new Summary(bot, message);
 		break;
 	default:
 		var err = 'Uh oh! Looks like there was a problem';
