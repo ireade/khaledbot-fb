@@ -220,64 +220,52 @@ var summarize = function(bot, message) {
 		// 2- GET BASIC SUMMARY
 
 		var revision = result.revisions[0];
-		console.log(revision);
 
 		var reply = 'SUMMARY WILL GO HERE';
 
 		bot.reply(message, reply, function(err) {
-			return Promise.resolve(result);
-		});
 
-	})
-	// .then(function(result) {
+				var authorReply = '';
 
-	// 	// GET REVISION AUTHOR
-	// 	var revision = result.revisions[0];
-
-	// 	if ( revision.anon ) {
-	// 		return Promise.resolve(result);
-	// 	}
-
-
-	// 	//var rawDate = revision.timestamp;
-
-	// 	var reply = 'This was last edited by ' + revision.user;
-
-	// 	bot.reply(message, reply, function(err, response) {
-	// 		return Promise.resolve(result);
-	// 	});
-
-	// })
-	.then(function(result) {
-
-		bot.reply(message, 'Buttons next');
-
-		// BUTTONS
-	
-		var titleWithUnderscores = result.title;
-		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
-
-		var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
-
-
-		var reply = {
-			attachment: {
-				'type': 'template',
-				'payload': {
-					'template_type': 'button',
-					'text': 'Would you like to read more?',
-					'buttons': [
-						{
-							'type': 'web_url',
-							'url': url,
-							'title': 'View on Wikipedia'
-						}
-					]
+				// AUTHOR
+				if ( revision.anon ) {
+					authorReply = 'Author was not identified';
+				} else {
+					authorReply = 'This was last edited by ' + revision.user;
 				}
-			}
-		};
 
-		bot.reply(message, reply);
+
+				bot.reply(message, authorReply, function(err, response) {
+
+
+					var titleWithUnderscores = result.title;
+					titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
+
+					var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
+
+
+					var reply = {
+						attachment: {
+							type: 'template',
+							payload: {
+								template_type: 'button',
+								text: 'Would you like to read more?',
+								buttons: [
+									{
+										type: 'web_url',
+										url: url,
+										title: 'View on Wikipedia'
+									}
+								]
+							}
+						}
+					};
+
+					bot.reply(message, reply);
+				});
+
+
+		});
 
 	});
 
