@@ -222,6 +222,8 @@ var botReply = function(bot, message, reply) {
 
 var getParts = function(extract) {
 
+	extract = extract.substring(0, 960);
+
 	var parts = [];
 
 	var first = extract.substring(0, 320);
@@ -230,16 +232,17 @@ var getParts = function(extract) {
 	parts.push(first);
 
 	var second = extract.substring(firstSentenceEndIndex + 1, firstSentenceEndIndex + 320);
+	console.log("initial second - " + second);
 	var secondSentenceEndIndex = second.lastIndexOf('.') + 1;
-	second = extract.substring(firstSentenceEndIndex, secondSentenceEndIndex);
+	second = extract.substring(firstSentenceEndIndex + 1, secondSentenceEndIndex);
 	parts.push(second);
 
 	var third = extract.substring(secondSentenceEndIndex + 1, secondSentenceEndIndex + 320);
 	var thirdSentenceEndIndex = third.lastIndexOf('.') + 1;
-	third = extract.substring(secondSentenceEndIndex, thirdSentenceEndIndex);
+	third = extract.substring(secondSentenceEndIndex + 1, thirdSentenceEndIndex);
 	parts.push(third);
 
-	console.log("firstSentenceEndIndex - " + firstSentenceEndIndex);
+	console.log("secondSentenceEndIndex - " + secondSentenceEndIndex);
 
 	return parts;
 
@@ -250,12 +253,9 @@ var getParts = function(extract) {
 
 var summarize_extract = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
+		
 
-
-		var extract = result.extract;
-		extract = extract.substring(0, 960);
-
-		var parts = getParts(extract);
+		var parts = getParts(result.extract);
 
 		var sequence = Promise.resolve();
 
