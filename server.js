@@ -235,26 +235,27 @@ var summarize_extract = function(bot, message, result) {
 
 		var sequence = Promise.resolve();
 
-		// for ( var i = 0; i < parts.length; i++ ) {
+		var index = 0;
 
-		// 	sequence = sequence.then(function() {
-		// 		var reply = parts[i];
-		// 		return botReply(bot, message, reply);
-		// 	});
+		parts.forEach(function(part) {
 
-		// 	if ( i ===  (parts.length - 1) ) {
-		// 		resolve();
-		// 	}
-		// }
+			var reply;
 
+			if ( index == (parts.length - 1) ) {
+				reply = part;
+			} else {
+				reply = part + '...';
+			}
 
+			sequence = sequence.then(function() {
+				return botReply(bot, message, reply);
+			});
 
-		var reply = parts[0] + '...';
+			index++
+
+		});
 
 		sequence = sequence.then(function() {
-			return botReply(bot, message, reply);
-		})
-		.then(function() {
 			resolve(result);
 		});
 
