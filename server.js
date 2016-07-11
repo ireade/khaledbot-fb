@@ -225,35 +225,36 @@ var botReply = function(bot, message, reply) {
 var summarize_extract = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
-		console.log("summarize_extract called");
 
 		var extract = result.extract;
 		extract = extract.substring(0, 960);
 
 
-		var parts = extract.match(/.{1,320}/g);
+		var parts = extract.match(/.{1,317}/g);
 
-		console.log(parts);
 
 		var sequence = Promise.resolve();
 
-		for ( var i = 0; i < parts.length; i++ ) {
+		// for ( var i = 0; i < parts.length; i++ ) {
 
-			sequence = sequence.then(function() {
-				var reply = parts[i];
-				return botReply(bot, message, reply);
-			});
+		// 	sequence = sequence.then(function() {
+		// 		var reply = parts[i];
+		// 		return botReply(bot, message, reply);
+		// 	});
 
-			if ( i ===  (parts.length - 1) ) {
-				resolve();
-			}
-		}
+		// 	if ( i ===  (parts.length - 1) ) {
+		// 		resolve();
+		// 	}
+		// }
 
 
 
-		var reply = parts[0];
+		var reply = parts[0] + '...';
 
-		botReply(bot, message, reply).then(function() {
+		sequence = sequence.then(function() {
+			return botReply(bot, message, reply);
+		})
+		.then(function() {
 			resolve(result);
 		});
 
