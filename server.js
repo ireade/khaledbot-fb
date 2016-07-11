@@ -86,10 +86,27 @@ var handleError = function(bot, message, err) {
 
 var momentDate = function(rawDate) {
 
-	var date = rawDate.split('T')[0];
+	'2016-07-11T11:35:09Z'
 
-	var m = moment(date).calendar(null, {
-		sameElse: 'ddd Do MMM YYYY'
+	var date = rawDate.split('T')[0];
+	var year = date.split('-')[0];
+	var month = date.split('-')[1];
+	var day = date.split('-')[2];
+
+
+	var time = rawDate.split('T')[1];
+	time = time.split('Z')[0];
+	var hour = time.split(':')[0];
+	var minute = time.split(':')[1];
+
+	var m = moment().year(year).month(month).date(day).hours(hour).minutes(minute);
+	m = m.calendar(null, {
+		sameDay: '[Today at] h:mma',
+		nextDay: '[Tomorrow at] h:mma',
+		nextWeek: '[Next] dddd [at] h:mma',
+		lastDay: '[Yesterday at] h:mma',
+		lastWeek: '[Last] dddd [at] h:mma',
+		sameElse: '[on] dddd Do MMMM [at] h:mma'
 	});
 
 	return m;
@@ -211,13 +228,16 @@ var summarize_summary = function(bot, message, result) {
 var summarize_author = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
+		var reply = '';
+
 		var revision = result.revisions[0];
-		var reply;
+
+		var date = momentDate(revision.timestamp);
 
 		if ( revision.anon ) {
-			reply = 'Author was not identified';
+			reply = 'This page was last edited ' + date;
 		} else {
-			reply = 'This was last edited by ' + revision.user;
+			reply = 'This page was last edited by ' + revision.user + ' ' + date;
 		}
 
 		bot.reply(message, reply, function(err) {
