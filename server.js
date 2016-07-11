@@ -193,13 +193,84 @@ var search = function(bot, message) {
 
 /*  SUMMARY FOR PAGE ---------------------- */
 
+
+var summarize_summary = function(bot, message, result) {
+	return new Promise(function(resolve, reject) {
+
+		var revision = result.revisions[0];
+		var reply = 'SUMMARY WILL GO HERE';
+
+		bot.reply(message, reply, function(err) {
+			if ( err ) reject(err);
+			resolve(result);
+		});
+
+	});
+};
+
+var summarize_author = function(bot, message, result) {
+	return new Promise(function(resolve, reject) {
+
+		var revision = result.revisions[0];
+		var reply;
+
+		if ( revision.anon ) {
+			reply = 'Author was not identified';
+		} else {
+			reply = 'This was last edited by ' + revision.user;
+		}
+
+		bot.reply(message, reply, function(err) {
+			if ( err ) reject(err);
+			resolve(result);
+		});
+
+	});
+};
+
+var summarize_cta = function(bot, message, result) {
+	return new Promise(function(resolve, reject) {
+
+		var revision = result.revisions[0];
+
+		var titleWithUnderscores = result.title;
+		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
+
+		var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
+
+		var reply = {
+			attachment: {
+				type: 'template',
+				payload: {
+					template_type: 'button',
+					text: 'Would you like to read more?',
+					buttons: [
+						{
+							type: 'web_url',
+							url: url,
+							title: 'View on Wikipedia'
+						}
+					]
+				}
+			}
+		};
+
+		bot.reply(message, reply, function(err) {
+			if ( err ) reject(err);
+			resolve(result);
+		});
+
+	});
+};
+
+
+
 var summarize = function(bot, message) {
 
 	var page = message.payload.split('summary_')[1];
 
 	var pageTitleUrlEncoded = page.replace(/_/g, '%20');
 	var pageTitleNormal = page.replace(/_/g, ' ');
-
 
 	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"');
 	
@@ -208,65 +279,20 @@ var summarize = function(bot, message) {
 	fetch(url)
 	.then(function(response) {
 
-		// 1- GET REVISION OBJECT
-
+		// GET REVISION OBJECT
 		var pages = response.query.pages;
 		var result = pages[Object.keys(pages)[0]];
 		return Promise.resolve(result);
 
 	})
 	.then(function(result) {
-
-		// 2- GET BASIC SUMMARY
-
-		var revision = result.revisions[0];
-
-		var reply = 'SUMMARY WILL GO HERE';
-
-		bot.reply(message, reply, function(err) {
-
-				var authorReply = '';
-
-				// AUTHOR
-				if ( revision.anon ) {
-					authorReply = 'Author was not identified';
-				} else {
-					authorReply = 'This was last edited by ' + revision.user;
-				}
-
-
-				bot.reply(message, authorReply, function(err, response) {
-
-
-					var titleWithUnderscores = result.title;
-					titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
-
-					var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
-
-
-					var reply = {
-						attachment: {
-							type: 'template',
-							payload: {
-								template_type: 'button',
-								text: 'Would you like to read more?',
-								buttons: [
-									{
-										type: 'web_url',
-										url: url,
-										title: 'View on Wikipedia'
-									}
-								]
-							}
-						}
-					};
-
-					bot.reply(message, reply);
-				});
-
-
-		});
-
+		return summarize_summary(bot, message, result);
+	})
+	.then(function(result) {
+		return summarize_author(bot, message, result);
+	})
+	.then(function(result) {
+		return summarize_cta(bot, message, result);
 	});
 
 };
