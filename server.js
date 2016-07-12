@@ -41,16 +41,13 @@ controller.setupWebserver(port, function (err, webserver) {
 
 var fetch = function(url) {
 	return new Promise(function(resolve, reject) {
-
 		https.get(url, function(res) {
 
 			var body = '';
-
 			res.on('data', function(data) {
 				data = data.toString();
 				body += data;
 			});
-
 			res.on('end', function() {
 				body = JSON.parse(body);
 				resolve(body);
@@ -59,9 +56,8 @@ var fetch = function(url) {
 		}).on('error', function(err) {
 			reject(err);
 		});
-
 	});
-};
+}; // end fetch
 
 var botReply = function(bot, message, reply) {
 	return new Promise(function(resolve, reject) {
@@ -69,6 +65,12 @@ var botReply = function(bot, message, reply) {
 			if ( err ) reject(err);
 			resolve(response);
 		});
+	});
+}; // end botReply
+
+var timeoutPromise = function(t) {
+	return new Promise(function(resolve, reject) {
+		setTimeout(function() { resolve(); }, t);
 	});
 };
 
@@ -78,30 +80,32 @@ var handleError = function(bot, message, err) {
 	bot.reply(message, reply);
 };
 
-var getParts = function(extract) {
 
-	extract = extract.substring(0, 960);
+var getParts = function(chunk, numberOfParts) {
+
+	chunk = chunk.substring(0, 960);
+
+	var partMaxLength = 320; // Max number of characters in a message
 
 	var parts = [];
 
 	var start = 0;
-	var end = 320;
+	var end = partMaxLength;
 
 	function getPart() {
-
-		var part = extract.substring(start, end);
+		var part = chunk.substring(start, end);
 		var sentenceEndIndex = start + part.lastIndexOf('.') + 1;
-		part = extract.substring(start, sentenceEndIndex);
+		part = chunk.substring(start, sentenceEndIndex);
 
 		parts.push(part);
 
 		start = sentenceEndIndex;
-		end = start + 320;
+		end = start + partMaxLength;
 	}
 
-	getPart();
-	getPart();
-	getPart();
+	for (var i = 0; i < numberOfParts; i++) {
+		getPart();
+	}
 
 	return parts;
 };
@@ -120,7 +124,6 @@ var getParts = function(extract) {
 
 /*  SEARCH ---------------------- */
 
-
 function Search(bot, message) {
 	this._init(bot, message);
 }
@@ -128,23 +131,21 @@ function Search(bot, message) {
 Search.prototype._setupTemplateItem = function(item) {
 
 	var titleWithUnderscores = item.title.replace(/ /g, '_');
-
 	var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
-
 	var subtitle = item.snippet;
 		subtitle = subtitle.replace(/<span class="searchmatch">/g, '');
 		subtitle = subtitle.replace(/<\/span>/g, '');
 		subtitle = subtitle.replace(/&quot;/g, '');
 		subtitle = subtitle.substring(0, 75) + '...';
 
-	var attachment = {
+	var item = {
 		'title': item.title,
 		'subtitle': subtitle,
 		'buttons':[
 			{
 				'type':'postback',
 				'payload': 'summary_'+titleWithUnderscores,
-				'title':'Summary'
+				'title':'Get Summary'
 			},
 			{
 				'type':'web_url',
@@ -152,17 +153,17 @@ Search.prototype._setupTemplateItem = function(item) {
 				'title':'Visit Page'
 			}         
 		]
-	}; // end attachment
+	}; // end item
 
-	return attachment;
+	return item;
 };
 
-Search.prototype._getSearchReply = function(response, prototype) {
+Search.prototype._getSearchReply = function(query, response, prototype) {
 
 	var searchResults = response.query.search;
 
 	if ( searchResults.length === 0 ) {
-		return Promise.resolve('Sorry, there was nothing found on Wikipedia about "'+query+'"');
+		return Promise.resolve('Sorry, there was nothing found on Wikipedia about "' + query + '"');
 	}
 
 	var elements = [];
@@ -190,12 +191,12 @@ Search.prototype._init = function(bot, message) {
 
 	var prototype = this;
 
-	var query = encodeURI( message.text );
-	var url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='+query+'&srprop=timestamp|snippet&utf8=&format=json';
+	var query = message.text;
+	var url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURI(query) + '&srprop=timestamp|snippet&utf8=&format=json';
 
 	fetch(url)
 	.then(function(response) {
-		return prototype._getSearchReply(response, prototype);
+		return prototype._getSearchReply(query, response, prototype);
 	})
 	.then(function(reply) {
 		return botReply(bot, message, reply);
@@ -222,7 +223,7 @@ function Summary(bot, message) {
 Summary.prototype._getExtract = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 		
-		var parts = getParts(result.extract);
+		var parts = getParts(result.extract, 3);
 
 		var sequence = Promise.resolve();
 
@@ -232,6 +233,8 @@ Summary.prototype._getExtract = function(bot, message, result) {
 
 			sequence = sequence.then(function() {
 				return botReply(bot, message, reply);
+			}).then(function() {
+				return timeoutPromise(2000);
 			});
 		});
 
@@ -245,9 +248,7 @@ Summary.prototype._getExtract = function(bot, message, result) {
 Summary.prototype._getCTA = function(bot, message, result) {
 	return new Promise(function(resolve, reject) {
 
-		var titleWithUnderscores = result.title;
-		titleWithUnderscores = titleWithUnderscores.replace(/ /g, '_');
-
+		var titleWithUnderscores = result.title.replace(/ /g, '_');
 		var url = 'https://en.wikipedia.org/wiki/'+titleWithUnderscores;
 
 		var reply = {
@@ -273,21 +274,22 @@ Summary.prototype._getCTA = function(bot, message, result) {
 		});
 
 	});
-}
+};
 
+Summary.prototype._getIntro = function(bot, message) {
 
+	var pageTitle = message.payload.split('summary_')[1];
+	var pageTitleUrlEncoded = pageTitle.replace(/_/g, '%20');
+	var pageTitleNormal = pageTitle.replace(/_/g, ' ');
 
+	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"...');
+};
 
 Summary.prototype._init = function(bot, message) {
 
 	var prototype = this;
 
-	var page = message.payload.split('summary_')[1];
-
-	var pageTitleUrlEncoded = page.replace(/_/g, '%20');
-	var pageTitleNormal = page.replace(/_/g, ' ');
-
-	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"...');
+	this._getIntro(bot, message);
 	
 	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&titles='+pageTitleUrlEncoded+'&prop=extracts&explaintext=&exintro=';
 
@@ -302,6 +304,9 @@ Summary.prototype._init = function(bot, message) {
 	})
 	.then(function(result) {
 		return prototype._getCTA(bot, message, result);
+	})
+	.catch(function(err) {
+		handleError(bot, message, err);
 	});
 }
 
@@ -337,9 +342,7 @@ controller.on('message_received', function (bot, message) {
 	if ( message.text.indexOf('summary_') > -1 ) { return; }
 
 	bot.reply(message, 'Searching Wikipedia for "'+message.text+'"');
-
 	new Search(bot, message);
-
 });
 
 
