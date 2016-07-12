@@ -95,7 +95,7 @@ var getParts = function(chunk, numberOfParts) {
 
 	function getPart() {
 
-		if ( start > chunk.length ) { return; }
+		if ( end > chunk.length && end !== partMaxLength ) { return; }
 
 		var part = chunk.substring(start, end);
 		var sentenceEndIndex = start + part.lastIndexOf('.') + 1;
