@@ -239,8 +239,6 @@ Summary.prototype._getExtract = function(bot, message, result) {
 
 			sequence = sequence.then(function() {
 				return botReply(bot, message, reply);
-			}).then(function() {
-				return timeoutPromise(2000);
 			});
 		});
 
