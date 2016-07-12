@@ -68,11 +68,6 @@ var botReply = function(bot, message, reply) {
 	});
 }; // end botReply
 
-var timeoutPromise = function(t) {
-	return new Promise(function(resolve, reject) {
-		setTimeout(resolve, t);
-	});
-};
 
 var handleError = function(bot, message, err) {
 	console.log(err);
@@ -239,9 +234,7 @@ Summary.prototype._getExtract = function(bot, message, result) {
 
 			sequence = sequence.then(function() {
 				return botReply(bot, message, reply);
-			}).then(function() {
-				return timeoutPromise(2000);
-			})
+			});
 		});
 
 		sequence = sequence.then(function() {
