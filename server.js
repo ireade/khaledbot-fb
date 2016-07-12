@@ -70,7 +70,7 @@ var botReply = function(bot, message, reply) {
 
 var timeoutPromise = function(t) {
 	return new Promise(function(resolve, reject) {
-		setTimeout(function() { resolve(); }, t);
+		setTimeout(resolve, t);
 	});
 };
 
@@ -239,7 +239,9 @@ Summary.prototype._getExtract = function(bot, message, result) {
 
 			sequence = sequence.then(function() {
 				return botReply(bot, message, reply);
-			});
+			}).then(function() {
+				return timeoutPromise(2000);
+			})
 		});
 
 		sequence = sequence.then(function() {
