@@ -76,8 +76,14 @@ var timeoutPromise = function(t) {
 
 var handleError = function(bot, message, err) {
 	console.log(err);
-	var reply = 'Oops, looks like there was an error - "' + err + '"';
-	bot.reply(message, reply);
+
+	botReply(bot, message, 'Uh oh, this is embarassing.. Looks like there was an error. Here are the details -')
+	.then(function() {
+		return botReply(bot, message, '"'+err+'"');
+	})
+	.then(function() {
+		return botReply(bot, message, 'You may want to contact my creator, ire@ireaderinokun.com');
+	})
 };
 
 
@@ -276,20 +282,16 @@ Summary.prototype._getCTA = function(bot, message, result) {
 	});
 };
 
-Summary.prototype._getIntro = function(bot, message) {
+
+Summary.prototype._init = function(bot, message) {
+
+	var prototype = this;
 
 	var pageTitle = message.payload.split('summary_')[1];
 	var pageTitleUrlEncoded = pageTitle.replace(/_/g, '%20');
 	var pageTitleNormal = pageTitle.replace(/_/g, ' ');
 
 	bot.reply(message, 'Getting a summary for "' + pageTitleNormal + '"...');
-};
-
-Summary.prototype._init = function(bot, message) {
-
-	var prototype = this;
-
-	this._getIntro(bot, message);
 	
 	var url = 'https://en.wikipedia.org/w/api.php?action=query&utf8=&format=json&titles='+pageTitleUrlEncoded+'&prop=extracts&explaintext=&exintro=';
 
